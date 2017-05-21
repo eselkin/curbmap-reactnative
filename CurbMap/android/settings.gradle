@@ -1,6 +1,0 @@
-rootProject.name = 'CurbMap'
-
-include ':app'
-
-include ':react-native-maps'
-project(':react-native-maps').projectDir = new File(rootProject.projectDir, '/Users/Developer/Git/ReactNative/CurbMap/node_modules/react-native-maps/lib/android')
