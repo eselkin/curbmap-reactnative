@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Button, Image } from 'react-native'
-import { StackNavigator } from 'react-navigation'
+import { StackNavigator, DrawerNavigator } from 'react-navigation'
 import Map from './Map'
 import Drawer from './Drawer'
 
@@ -12,6 +12,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  icon: {
+    width: 24,
+    height: 24,
   },
 })
 
@@ -54,13 +58,6 @@ class MyNotificationsScreen extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  icon: {
-    width: 24,
-    height: 24,
-  },
-})
 
 const MyApp = DrawerNavigator({
   Home: {
