@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Button, Image } from 'react-native'
-import { StackNavigator, DrawerNavigator } from 'react-navigation'
+import { StyleSheet, Text, View, Button, Image, StatusBar, TouchableWithoutFeedback } from 'react-native'
 import Map from './Map'
 import Drawer from './Drawer'
 
@@ -8,74 +7,31 @@ import Drawer from './Drawer'
 
 const styles = StyleSheet.create({
   container: {
+    paddingTop: StatusBar.currentHeight,
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
   icon: {
-    width: 24,
-    height: 24,
+    position: 'absolute',
+    zIndex: 1,
+    top: 30,
+    left: 20,
+    width: 34,
+    height: 34,
+  },
+  nav: {
+    height: 20,
+    backgroundColor: 'green',
+  },
+  full: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 })
 
-class MyHomeScreen extends Component {
-  static navigationOptions = {
-    drawerLabel: 'Home',
-    drawerIcon: ({ tintColor }) => (
-      <Image
-        style={[styles.icon, { tintColor }]}
-      />
-    ),
-  }
-
-  render() {
-    return (
-      <Button
-        onPress={() => this.props.navigation.navigate('Notifications')}
-        title="Go to notifications"
-      />
-    )
-  }
-}
-
-class MyNotificationsScreen extends Component {
-  static navigationOptions = {
-    drawerLabel: 'Notifications',
-    drawerIcon: ({ tintColor }) => (
-      <Image
-        style={[styles.icon, {tintColor: tintColor}]}
-      />
-    ),
-  }
-
-  render() {
-    return (
-      <Button
-        onPress={() => this.props.navigation.goBack()}
-        title="Go back home"
-      />
-    )
-  }
-}
-
-const MyApp = DrawerNavigator({
-  Home: {
-    screen: MyHomeScreen,
-  },
-  Notifications: {
-    screen: MyNotificationsScreen,
-  },
-})
-
-class SimpleApp extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Drawer />
-      </View>
-    )
-  }
-}
-
-export default MyApp
+export default Drawer
