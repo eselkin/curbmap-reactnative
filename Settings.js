@@ -2,8 +2,10 @@ import React, { Component } from 'react'
 import { StyleSheet, Image, View } from 'react-native'
 import MenuIcon from './MenuIcon'
 
-const styles = StyleSheet.create({
-  icon: {},
+const styles = (hidden) => StyleSheet.create({
+  hidden: {
+    display: hidden ? 'none' : 'block',
+  },
 })
 
 class Settings extends Component {
@@ -18,7 +20,7 @@ class Settings extends Component {
 
   render() {
     return (
-      <View style={styles.full}>
+      <View style={styles(this.props.authenticated).hidden}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
       </View>
     )
