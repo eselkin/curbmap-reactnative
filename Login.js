@@ -14,6 +14,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
+    loginbox: {
+        marginLeft: 30,
+        padding: 10,
+        width: 300,
+        height: 50,
+        borderColor: 'gray',
+        borderWidth: 1
+    }
+
 });
 
 
@@ -51,13 +60,13 @@ class Login extends Component {
             <View style={styles.full}>
                 <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
 
-                <TextInput style={{position: 'absolute', left: 30, top: 100, padding: 10, width: 300, height: 50, borderColor: 'gray', borderWidth: 1}}
+                <TextInput style={styles.loginbox}
                            onChangeText={(text) => this.setState({user: text})}
                            placeholder="username"
                            value={this.state.user} />
 
 
-                <TextInput style={{position: 'absolute', left: 30, top:200, padding: 10, width: 300, height: 50, borderColor: 'gray', borderWidth: 1}}
+                <TextInput style={styles.loginbox}
                            onChangeText={(text) => this.setState({pass: text})}
                            placeholder="password"
                            value={this.state.pass} />
