@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Image, TextInput, Button, Dimensions } from 'react-native'
+import { StyleSheet, View, Image, TextInput, Button, Dimensions} from 'react-native'
 import MenuIcon from './MenuIcon'
-
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 const {width, height} = Dimensions.get("window");
 
 
@@ -95,7 +95,7 @@ class Login extends Component {
 
   constructor(props, context) {
     super(props, context);
-    this.state = {};
+    this.stateValues = {};
   }
 
   componentDidMount() {
@@ -118,8 +118,7 @@ class Login extends Component {
     return (
         <View style={styles.full}>
           <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
-
-          <View style={styles.loginholder}>
+          <KeyboardAwareScrollView style={styles.loginholder} ref={(scrollObj) => {this.scrollView = scrollObj}}>
             <View style={styles.loginimageview}>
               <Image
                   style={styles.loginimage}
@@ -127,15 +126,18 @@ class Login extends Component {
               />
             </View>
             <TextInput
+                ref="userInput"
                 autoCorrect={false}
                 autoCapitalize='none'
                 style={styles.loginbox}
                 onChangeText={(text) => this.setState({user: text})}
                 placeholder='username'
                 placeholderTextColor='lightgray'
-                value={this.state.user} />
+                value={this.stateValues.user}
+                 />
 
             <TextInput
+                ref="passInput"
                 autoCorrect={false}
                 autoCapitalize='none'
                 style={styles.loginbox}
@@ -143,7 +145,8 @@ class Login extends Component {
                 placeholder="password"
                 placeholderTextColor='lightgray'
                 secureTextEntry={true}
-                value={this.state.pass} />
+                value={this.stateValues.pass}
+                />
 
             <Button
                 title="Login"
@@ -152,7 +155,7 @@ class Login extends Component {
                 style={{fontSize: 20, color: 'green'}}>
               Login
             </Button>
-          </View>
+          </KeyboardAwareScrollView>
         </View>
     )
   }
