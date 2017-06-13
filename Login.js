@@ -44,7 +44,8 @@ const styles = StyleSheet.create({
     width: 150
   },
   loginViewHolder: {
-    marginTop: 100
+    marginTop: 100,
+    marginBottom: 50
   }
 });
 
@@ -87,9 +88,6 @@ class Login extends Component {
                           .then((oauthToken)=> oauthToken.json())
                           .then((oauthTokenJSON) => {
                             let datestring = new Date(new Date().getTime() + oauthTokenJSON['expires_in'] * 1000).toISOString();
-                            console.log(typeof oauthTokenJSON['access_token']);
-                            console.log(typeof oauthTokenJSON['refresh_token']);
-                            console.log(typeof datestring);
                             AsyncStorage.setItem(oauthTokenJSON['access_token'], "AUTH_TOKEN");
                             AsyncStorage.setItem(oauthTokenJSON['refresh_token'], "REFRESH_TOKEN");
                             AsyncStorage.setItem(datestring, "EXPIRES_AT");
