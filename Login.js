@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
 
 class Login extends Component {
   doLogin = () => {
+    this.stateValues.buttonLoginDisabled = true;
     fetch('https://curbmap.com/token')
         .then((response) => response.text())
         .then((responseText) => {
@@ -97,14 +98,14 @@ class Login extends Component {
 
                           })
                     })
-                    .catch((e) => {console.log("Error in login: "+ e)})
+                    .catch((e) => {console.log("Error in login: "+ e); this.stateValues.buttonLoginDisabled = false})
               })
         })
   };
 
   constructor(props, context) {
     super(props, context);
-    this.stateValues = {};
+    this.stateValues = {buttonLoginDisabled: false};
   }
 
   componentDidMount() {
@@ -166,6 +167,7 @@ class Login extends Component {
                     backgroundColor="#6147d0"
                     fontSize={20}
                     buttonStyle={styles.buttonlogin}
+                    disabled={this.stateValues.buttonLoginDisabled}
                 >
                   Login
                 </Button>
