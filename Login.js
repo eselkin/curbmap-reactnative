@@ -86,6 +86,7 @@ class Login extends Component {
                           .then((oauthToken)=> oauthToken.json())
                           .then((oauthTokenJSON) => {
                             console.log(oauthTokenJSON);
+                            this.props.navigation.navigate('DrawerOpen', {oauth: oauthTokenJSON, loggedIn: true})
                           })
                     })
                     .catch((e) => {console.log("Error in login: "+ e)})
