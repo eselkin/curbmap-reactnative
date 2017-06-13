@@ -14,10 +14,10 @@ export const isSignedIn = () => {
   });
 };
 
-export const signOut = () => {
+export const onSignOut = () => {
   AsyncStorage.removeItem('AUTH_TOKEN');
   AsyncStorage.removeItem('REFRESH_TOKEN');
   AsyncStorage.removeItem('EXPIRES_AT');
   AsyncStorage.removeItem('USERNAME');
-  AsyncStorage.removeItem('PASSWORD');
+  return AsyncStorage.removeItem('PASSWORD');
 };

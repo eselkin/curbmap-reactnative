@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { StyleSheet, Image, View } from 'react-native'
+import { Button } from 'react-native-elements'
 import MenuIcon from './MenuIcon'
+import {onSignOut} from './auth'
 
 const styles = (hidden) => StyleSheet.create({
   hidden: {
@@ -22,7 +24,11 @@ class Settings extends Component {
     return (
       <View style={styles(this.props.authenticated).hidden}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
-        <View
+        <View>
+          <Button title="Signout" onPress={() => onSignOut().then(() => this.props.navigation.navigate('SignedOut'))}>
+            Signout
+          </Button>
+        </View>
       </View>
     )
   }

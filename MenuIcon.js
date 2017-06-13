@@ -21,6 +21,6 @@ const MenuIcon = props => (
       style={styles.icon}
     />
   </TouchableWithoutFeedback>
-)
+);
 
 export default MenuIcon
