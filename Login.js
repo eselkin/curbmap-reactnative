@@ -88,7 +88,10 @@ class Login extends Component {
                             AsyncStorage.setItem(oauthTokenJSON['access_token'], "AUTH_TOKEN");
                             AsyncStorage.setItem(oauthTokenJSON['refresh_token'], "REFRESH_TOKEN");
                             AsyncStorage.setItem(new Date(new Date().getTime() + oauthTokenJSON['expires_in'] * 1000).toISOString(), "EXPIRES_AT");
+                            AsyncStorage.setItem(this.stateValues.user, "USERNAME");
+                            AsyncStorage.setItem(this.stateValues.pass, "PASSWORD"); // if user needs to request a new oauth token
                             this.props.navigation.navigate('DrawerOpen', {loggedIn: true});
+
                           })
                     })
                     .catch((e) => {console.log("Error in login: "+ e)})
