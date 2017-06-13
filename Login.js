@@ -86,12 +86,16 @@ class Login extends Component {
                       })
                           .then((oauthToken)=> oauthToken.json())
                           .then((oauthTokenJSON) => {
+                            let datestring = new Date(new Date().getTime() + oauthTokenJSON['expires_in'] * 1000).toISOString();
+                            console.log(typeof oauthTokenJSON['access_token']);
+                            console.log(typeof oauthTokenJSON['refresh_token']);
+                            console.log(typeof datestring);
                             AsyncStorage.setItem(oauthTokenJSON['access_token'], "AUTH_TOKEN");
                             AsyncStorage.setItem(oauthTokenJSON['refresh_token'], "REFRESH_TOKEN");
-                            AsyncStorage.setItem(new Date(new Date().getTime() + oauthTokenJSON['expires_in'] * 1000).toISOString(), "EXPIRES_AT");
-                            AsyncStorage.setItem(this.stateValues.user, "USERNAME");
-                            AsyncStorage.setItem(this.stateValues.pass, "PASSWORD"); // if user needs to request a new oauth token
-                            this.props.navigation.navigate('DrawerOpen');
+                            AsyncStorage.setItem(datestring, "EXPIRES_AT");
+                            AsyncStorage.setItem(this.state.user, "USERNAME");
+                            AsyncStorage.setItem(this.state.pass, "PASSWORD"); // if user needs to request a new oauth token
+                            this.props.navigation.navigate('SignedIn');
 
                           })
                     })
