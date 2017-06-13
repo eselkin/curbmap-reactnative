@@ -6,7 +6,7 @@ const styles = (hidden) => StyleSheet.create({
   hidden: {
     display: hidden ? 'none' : 'block',
   },
-})
+});
 
 class Settings extends Component {
   static navigationOptions = {
@@ -16,12 +16,13 @@ class Settings extends Component {
         style={[styles.icon, {tintColor: tintColor}]}
       />
     ),
-  }
+  };
 
   render() {
     return (
       <View style={styles(this.props.authenticated).hidden}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
+        <View
       </View>
     )
   }

@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 
 class Home extends Component {
   static navigationOptions = {
-    drawerLabel: 'Home',
+    drawerLabel: 'Map Home',
     drawerIcon: ({ tintColor }) => (
       <Image
         style={[styles.icon, { tintColor }]}

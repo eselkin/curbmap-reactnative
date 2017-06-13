@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Button, Image, StatusBar, TouchableWithoutFeedback } from 'react-native'
 import Map from './Map'
-import Drawer from './Drawer'
+import {isSignedIn} from './auth'
+import { createRootNavigator } from "./routing";
+
 
 //https://curbmap.com/oauth/token
 
@@ -34,4 +36,35 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Drawer
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      signedIn: false,
+      checkedSignIn: false
+    };
+  }
+
+  render() {
+    if (!this.state.checkedSignIn) {
+      return null;
+    }
+
+    const FirstView = createRootNavigator(this.state.signedIn);
+    return <FirstView />;
+  }
+
+  componentWillMount() {
+    isSignedIn()
+        .then(result => {
+          this.setState({signedIn: true, checkedSignIn: true})
+        })
+        .catch(err => {
+          alert('ERROR:' + err);
+        })
+  }
+
+}
+
+export default App;
