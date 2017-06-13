@@ -1,13 +1,35 @@
 import React, { Component } from 'react'
-import { StyleSheet, Image, View } from 'react-native'
-import { Button } from 'react-native-elements'
+import { StyleSheet, Image, View, Dimensions} from 'react-native'
+import { Button, Card } from 'react-native-elements'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import MenuIcon from './MenuIcon'
 import {onSignOut} from './auth'
+const {width, height} = Dimensions.get("window");
 
-const styles = (hidden) => StyleSheet.create({
-  hidden: {
-    display: hidden ? 'none' : 'block',
+const styles = StyleSheet.create({
+  full: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center'
   },
+  settingsscrollholder: {
+  },
+  settingsholder: {
+    width: width * 0.9,
+    margin: 10,
+    marginTop: 60,
+    marginBottom: 60,
+    flex: 1
+  },
+  card : {
+    margin: 10,
+    height: height * 0.8
+  }
 });
 
 class Settings extends Component {
@@ -22,12 +44,21 @@ class Settings extends Component {
 
   render() {
     return (
-      <View style={styles(this.props.authenticated).hidden}>
+      <View style={styles.full}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
-        <View>
-          <Button title="Signout" onPress={() => onSignOut().then(() => this.props.navigation.navigate('SignedOut'))}>
-            Signout
-          </Button>
+        <View style={styles.settingsholder}>
+          <Card wrapperStyle={styles.card}>
+            <KeyboardAwareScrollView style={styles.settingscrollsholder} ref={(scrollObj) => {this.scrollView = scrollObj}}>
+              <Button
+                  backgroundColor="#0000ff"
+                  color="#fcfcfc"
+                  title="Signout"
+                  onPress={() => onSignOut().then(() => this.props.navigation.navigate('SignedOut'))}
+              >
+                Signout
+              </Button>
+            </KeyboardAwareScrollView>
+          </Card>
         </View>
       </View>
     )

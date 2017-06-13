@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     width: 150
   },
   loginViewHolder: {
-    marginTop: 100,
+    marginTop: 60,
     marginBottom: 50
   }
 });
