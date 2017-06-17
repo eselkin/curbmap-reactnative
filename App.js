@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Button, Image, StatusBar, TouchableWithoutFeedback } from 'react-native'
+import { StyleSheet, Text, View, Button, Image, StatusBar, TouchableWithoutFeedback, AsyncStorage } from 'react-native'
 import Map from './Map'
 import {isSignedIn} from './auth'
 import { createRootNavigator } from "./routing";
@@ -58,7 +58,7 @@ class App extends Component {
   componentWillMount() {
     isSignedIn()
         .then(result => {
-          this.setState({signedIn: true, checkedSignIn: true})
+          this.setState({signedIn: result, checkedSignIn: true})
         })
         .catch(err => {
           alert('ERROR:' + err);

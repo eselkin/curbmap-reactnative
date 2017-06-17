@@ -89,11 +89,21 @@ class Login extends Component {
                           .then((oauthToken)=> oauthToken.json())
                           .then((oauthTokenJSON) => {
                             let datestring = new Date(new Date().getTime() + oauthTokenJSON['expires_in'] * 1000).toISOString();
-                            AsyncStorage.setItem(oauthTokenJSON['access_token'], "AUTH_TOKEN");
-                            AsyncStorage.setItem(oauthTokenJSON['refresh_token'], "REFRESH_TOKEN");
-                            AsyncStorage.setItem(datestring, "EXPIRES_AT");
-                            AsyncStorage.setItem(this.state.user, "USERNAME");
-                            AsyncStorage.setItem(this.state.pass, "PASSWORD"); // if user needs to request a new oauth token
+                            console.log("date");
+                            AsyncStorage.setItem("AUTH_TOKEN", oauthTokenJSON['access_token']);
+                            console.log("authtoken");
+                            AsyncStorage.setItem("REFRESH_TOKEN", oauthTokenJSON['refresh_token']);
+                            console.log("refreshtoken");
+                            AsyncStorage.setItem("EXPIRES_AT", datestring);
+                            console.log("date again");
+                            AsyncStorage.setItem("USERNAME", this.state.user);
+                            console.log("username");
+                            AsyncStorage.setItem("PASSWORD", this.state.pass); // if user needs to request a new oauth token
+                            console.log("password");
+                            AsyncStorage.setItem("BADGE", responseUserJSON.badge);
+                            console.log("badge");
+                            AsyncStorage.setItem("SCORE", ""+responseUserJSON.score);
+                            console.log("score");
                             this.props.navigation.navigate('SignedIn');
 
                           })
