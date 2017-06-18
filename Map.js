@@ -22,8 +22,8 @@ const LATITUDE_DELTA = 0.1922;
 const LONGITUDE_DELTA = 0.1421;
 
 class Map extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
     this.state = this.getInitialState();
   }
 
@@ -31,6 +31,8 @@ class Map extends Component {
     this.setState({
       region: region
     });
+    console.log("PROPS");
+    console.log(this.props);
   };
   componentWillUnmount() {
     navigator.geolocation.clearWatch(this.watchID);
@@ -76,6 +78,7 @@ class Map extends Component {
   }
 
   render() {
+
     return ( <MapView style={ styles.map }
                       region={ this.state.region }
                       onRegionChange={ this._onRegionChange }

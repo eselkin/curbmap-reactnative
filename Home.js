@@ -23,18 +23,34 @@ class Home extends Component {
     ),
   };
 
-  componentDidMount() {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      username: '',
+      password: '',
+      authtoken: '',
+      expiresat: ''
+    }
   }
 
   render() {
     console.log(this.props.navigation.state.params); // has all the data required for update and send to backend nd you seem to only be able to get them in the render
-    if (this.props.navigation.state.params) {
-
+    let map;
+    if (this.props.navigation.state.params === undefined) {
+      map = <Map />
+    } else {
+      console.log("giving params");
+      map = <Map
+          username={this.props.navigation.state.params.username}
+          password={this.props.navigation.state.params.password}
+          authtoken={this.props.navigation.state.params.authtoken}
+          expiresat={this.props.navigation.state.params.expiresat}
+      />
     }
     return (
       <View style={styles.full}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
-        <Map />
+        {map}
       </View>
     )
   }
