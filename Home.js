@@ -24,6 +24,8 @@ class Home extends Component {
   }
 
   render() {
+    console.log("MYPROPS: ");
+    console.log(this.props.params);
     return (
       <View style={styles.full}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
