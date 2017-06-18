@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-})
+});
 
 class Home extends Component {
   static navigationOptions = {
@@ -21,11 +21,16 @@ class Home extends Component {
         style={[styles.icon, { tintColor }]}
       />
     ),
+  };
+
+  componentDidMount() {
   }
 
   render() {
-    console.log("MYPROPS: ");
-    console.log(this.props.params);
+    console.log(this.props.navigation.state.params); // has all the data required for update and send to backend nd you seem to only be able to get them in the render
+    if (this.props.navigation.state.params) {
+
+    }
     return (
       <View style={styles.full}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
