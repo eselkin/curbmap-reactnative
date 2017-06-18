@@ -15,13 +15,16 @@ const styles = StyleSheet.create({
     bottom: 0,
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#4e2e2e'
   },
   loginbox: {
     marginTop: 10,
     padding: 10,
     height: 50,
-    borderColor: 'gray',
+    color: 'white',
+    backgroundColor: '#4e2e2e',
+    borderColor: '#999',
     borderWidth: 1,
     borderRadius: 5,
 
@@ -46,6 +49,11 @@ const styles = StyleSheet.create({
   loginViewHolder: {
     marginTop: 60,
     marginBottom: 50
+  },
+  card: {
+    backgroundColor: '#4e2e2e'
+  },
+  cardwrapper: {
   }
 });
 
@@ -139,7 +147,9 @@ class Login extends Component {
         <View style={styles.full}>
           <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
           <View style={styles.loginViewHolder}>
-            <Card wrapperStyle={{marginTop: 20}}>
+            <Card
+                style={styles.card}
+                wrapperStyle={styles.cardwrapper}>
               <KeyboardAwareScrollView style={styles.loginholder} ref={(scrollObj) => {this.scrollView = scrollObj}}>
                 <View style={styles.loginimageview}>
                   <Image

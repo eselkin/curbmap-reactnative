@@ -15,7 +15,8 @@ const styles = StyleSheet.create({
     bottom: 0,
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#4e2e2e'
   },
   settingsscrollholder: {
   },
@@ -27,8 +28,12 @@ const styles = StyleSheet.create({
     flex: 1
   },
   card : {
-    margin: 10,
-    height: height * 0.8
+    padding: 20,
+    margin: 20
+  },
+  cardwrapper: {
+    width: width * 0.80,
+    height: height * 0.8,
   }
 });
 
@@ -47,7 +52,9 @@ class Settings extends Component {
       <View style={styles.full}>
         <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
         <View style={styles.settingsholder}>
-          <Card wrapperStyle={styles.card}>
+          <Card
+              style={styles.card}
+              wrapperStyle={styles.cardWrapper}>
             <KeyboardAwareScrollView style={styles.settingscrollsholder} ref={(scrollObj) => {this.scrollView = scrollObj}}>
               <Button
                   backgroundColor="#0000ff"

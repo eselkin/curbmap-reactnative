@@ -3,21 +3,28 @@ import Home from './Home'
 import Settings from './Settings'
 import Login from './Login'
 import SignedInDrawer from './SignedInDrawer'
-
+import SignedOutDrawer from './SignedOutDrawer'
 const SignedOut = DrawerNavigator({
   Home: {
-    screen: Home,
-    passProps: {loggedIn: false}
+    screen: Home
   },
   Login: {
     screen: Login
+  },
+}, {
+  contentComponent: SignedOutDrawer,
+  contentOptions: {
+    style: {
+      flex: 1,
+      paddingTop: 20,
+      backgroundColor: '#000000'
+    }
   }
 });
 
 const SignedIn = DrawerNavigator({
   Home: {
-    screen: Home,
-    passProps: {loggedIn: true}
+    screen: Home
   },
   Settings: {
     screen: Settings
