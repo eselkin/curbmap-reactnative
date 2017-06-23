@@ -2,6 +2,7 @@ import { DrawerNavigator, StackNavigator } from 'react-navigation'
 import Home from './Home'
 import Settings from './Settings'
 import Login from './Login'
+import Signup from './Signup'
 import SignedInDrawer from './SignedInDrawer'
 import SignedOutDrawer from './SignedOutDrawer'
 const SignedOut = DrawerNavigator({
@@ -11,6 +12,9 @@ const SignedOut = DrawerNavigator({
   Login: {
     screen: Login
   },
+  Signup: {
+    screen: Signup
+  }
 }, {
   contentComponent: SignedOutDrawer,
   contentOptions: {

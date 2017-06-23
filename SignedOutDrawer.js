@@ -130,7 +130,20 @@ export default class SignedOutDrawer extends Component {
                   fontSize={20}
                   icon={{name: 'keyboard-arrow-right', size: 32}}
               >
-                Settings
+                Login
+              </Button>
+              <Button
+                  raised
+                  large
+                  containerViewStyle={styles.menuitem}
+                  buttonStyle={styles.menubutton}
+                  color='rgba(255,255,255,1)'
+                  onPress={() => this._onPress('Signup')}
+                  title='Signup'
+                  fontSize={20}
+                  icon={{name: 'check-circle', size: 32}}
+              >
+                Signup
               </Button>
             </View>
 
