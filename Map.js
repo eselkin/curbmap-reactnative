@@ -1,13 +1,11 @@
-import React, {
-  Component
-} from 'react'
+import React, { Component } from 'react'
 import MapView from 'react-native-maps'
+import { StyleSheet } from 'react-native'
 import {
-  StyleSheet
-} from 'react-native'
-import {
-  Permissions
-} from 'expo';
+  Permissions,
+  IntentLauncherAndroid,
+  Location,
+} from 'expo'
 
 const styles = StyleSheet.create({
   map: {
@@ -17,73 +15,83 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-});
-const LATITUDE_DELTA = 0.1922;
-const LONGITUDE_DELTA = 0.1421;
+})
+const LATITUDE_DELTA = 0.1922
+const LONGITUDE_DELTA = 0.1421
 
 class Map extends Component {
-  constructor(props, context) {
-    super(props, context);
-    this.state = this.getInitialState();
+  state = {
+    region: {
+      latitude: 34.0928,
+      longitude: -118.3587,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA,
+    },
   }
 
-  _onRegionChange = (region) => {
-    this.setState({
-      region: region
-    });
-    console.log("PROPS");
-    console.log(this.props);
-  };
+  componentWillMount() {
+    if (this.canGetLocation()) {
+      this.watchLocation()
+    }
+  }
+
   componentWillUnmount() {
-    navigator.geolocation.clearWatch(this.watchID);
+    if (this.watcher) {
+      this.watcher()
+    }
   }
 
-  componentDidMount() {
-    //https://stackoverflow.com/questions/38122649/how-to-create-maps-which-detect-automatic-location-in-react-native
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-          this.setState({
-            region: {
-              latitude: position.coords.latitude,
-              longitude: position.coords.longitude,
-              latitudeDelta: LATITUDE_DELTA,
-              longitudeDelta: LONGITUDE_DELTA
-            }
-          });
+  onRegionChange = (region) => {
+    this.setState({ region })
+  }
+
+  watchLocation = async () => {
+    const { status } = await Permissions.askAsync(Permissions.LOCATION)
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      })
+      return
+    }
+
+    this.watcher = await Location.watchPositionAsync({
+      enableHighAccuracy: true,
+      timeInterval: 500,
+      distanceInterval: 10,
+    }, ({ coords }) => {
+      this.setState({
+        region: {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
         },
-        (error) => alert(error.message),
-        {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
-    );
-    this.watchID = navigator.geolocation.watchPosition((position) => {
-      const newRegion = {
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
-      };
-
-      this._onRegionChange(newRegion);
-    });
+      })
+    })
   }
 
-  getInitialState() {
-    return {
-      region: {
-        latitude: 34.0928,
-        longitude: -118.3587,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA,
-      }
-    };
+  canGetLocation = async () => {
+    const { locationServicesEnabled } = await Location.getProviderStatusAsync()
+
+    if (!locationServicesEnabled) {
+      // Open location settings
+      IntentLauncherAndroid.startActivityAsync(
+        IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS,
+      )
+    }
+
+    return locationServicesEnabled
   }
 
   render() {
-
-    return ( <MapView style={ styles.map }
-                      region={ this.state.region }
-                      onRegionChange={ this._onRegionChange }
-                      loadingEnabled
-                      showsUserLocation/>
+    return (
+      <MapView
+        style={styles.map}
+        region={this.state.region}
+        onRegionChange={this.onRegionChange}
+        loadingEnabled
+        showsUserLocation
+      />
     )
   }
 }
