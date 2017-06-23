@@ -20,7 +20,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "dtrace": "0.0.0",
+    "dtrace": "^0.0.0",
     "dtrace-provider": "^0.8.3",
     "expo": "^17.0.0",
     "prop-types": "^15.5.10",
