@@ -1859,7 +1859,7 @@ dtrace-provider@^0.8.3, dtrace-provider@~0.8:
   dependencies:
     nan "^2.3.3"
 
-dtrace@0.0.0:
+dtrace@^0.0.0:
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/dtrace/-/dtrace-0.0.0.tgz#7bbd2a4516339b3b4441ef7c6932d721e80a43a7"
 
@@ -3725,11 +3725,7 @@ mz@^2.3.1, mz@^2.6.0:
     object-assign "^4.0.1"
     thenify-all "^1.0.0"
 
-nan@^2.3.3:
-  version "2.6.2"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.6.2.tgz#e4ff34e6c95fdfb5aecc08de6596f43605a7db45"
-
-nan@~2.4.0:
+nan@^2.3.3, nan@~2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.4.0.tgz#fb3c59d45fe4effe215f0b890f8adf6eb32d2232"
 
@@ -4450,7 +4446,7 @@ react-native@^0.43.4:
     xpipe "^1.0.5"
     yargs "^6.4.0"
 
-react-navigation@^1.0.0-beta.9:
+react-navigation@^1.0.0-beta.11:
   version "1.0.0-beta.11"
   resolved "https://registry.yarnpkg.com/react-navigation/-/react-navigation-1.0.0-beta.11.tgz#4271edb23cdbcc6eb88602f7fde0a77f0ef7a160"
   dependencies:

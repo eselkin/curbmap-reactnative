@@ -14,29 +14,45 @@ const styles = StyleSheet.create({
     bottom: 0,
     flex: 1,
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#4e2e2e'
   },
   loginbox: {
     marginTop: 10,
     padding: 10,
     height: 50,
-    borderColor: 'gray',
+    color: 'white',
+    backgroundColor: '#4e2e2e',
+    borderColor: '#999',
     borderWidth: 1,
     borderRadius: 5,
 
   },
   buttonlogin: {
-    fontSize: 20,
-    backgroundColor: 'green',
-    padding: 20,
+    marginTop: 10,
     borderRadius: 5
   },
   loginholder: {
     flexDirection: 'column',
-    marginTop: height * 0.10,
     padding: 10,
     height: height * 0.7,
     width: width * 0.8
+  },
+  loginimageview: {
+    alignItems: 'center',
+  },
+  loginimage: {
+    height:150,
+    width: 150
+  },
+  loginViewHolder: {
+    marginTop: 60,
+    marginBottom: 50
+  },
+  card: {
+    backgroundColor: '#4e2e2e'
+  },
+  cardwrapper: {
   },
   signuperror : {
     flexDirection: 'column',
@@ -47,13 +63,6 @@ const styles = StyleSheet.create({
   },
   signuperrortext: {
     color: 'white'
-  },
-  loginimageview: {
-    alignItems: 'center',
-  },
-  loginimage: {
-    height:150,
-    width: 150
   }
 });
 

@@ -55,7 +55,7 @@ class App extends Component {
     return <FirstView />;
   }
 
-  componentWillMount() {
+  componentMount() {
     isSignedIn()
         .then(result => {
           this.setState({signedIn: result, checkedSignIn: true})
