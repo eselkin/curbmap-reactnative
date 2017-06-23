@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
 import MapView from 'react-native-maps'
 import { StyleSheet } from 'react-native'
-import {
-  Permissions,
-  IntentLauncherAndroid,
-  Location,
-} from 'expo'
+import { Permissions, IntentLauncherAndroid, Location } from 'expo'
 
 const styles = StyleSheet.create({
   map: {
@@ -54,20 +50,23 @@ class Map extends Component {
       return
     }
 
-    this.watcher = await Location.watchPositionAsync({
-      enableHighAccuracy: true,
-      timeInterval: 500,
-      distanceInterval: 10,
-    }, ({ coords }) => {
-      this.setState({
-        region: {
-          latitude: coords.latitude,
-          longitude: coords.longitude,
-          latitudeDelta: LATITUDE_DELTA,
-          longitudeDelta: LONGITUDE_DELTA,
-        },
-      })
-    })
+    this.watcher = await Location.watchPositionAsync(
+      {
+        enableHighAccuracy: true,
+        timeInterval: 500,
+        distanceInterval: 10,
+      },
+      ({ coords }) => {
+        this.setState({
+          region: {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          },
+        })
+      },
+    )
   }
 
   canGetLocation = async () => {

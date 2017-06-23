@@ -1,5 +1,6 @@
 import React from 'react'
 import { StyleSheet, Image, TouchableWithoutFeedback } from 'react-native'
+import menuImg from './menu.png'
 
 const styles = StyleSheet.create({
   icon: {
@@ -13,14 +14,9 @@ const styles = StyleSheet.create({
 })
 
 const MenuIcon = props => (
-  <TouchableWithoutFeedback
-    onPress={props.onPress}
-  >
-    <Image
-      source={require('./menu.png')}
-      style={styles.icon}
-    />
+  <TouchableWithoutFeedback onPress={props.onPress}>
+    <Image source={menuImg} style={styles.icon} />
   </TouchableWithoutFeedback>
-);
+)
 
 export default MenuIcon

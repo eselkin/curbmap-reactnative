@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { StyleSheet, Text, View, Button, Image, StatusBar, TouchableWithoutFeedback, AsyncStorage } from 'react-native'
-import Map from './Map'
-import {isSignedIn} from './auth'
-import { createRootNavigator } from "./routing";
+import {
+  StyleSheet,
+  StatusBar,
+} from 'react-native'
+import { isSignedIn } from './auth'
+import { createRootNavigator } from './routing'
 
-
-//https://curbmap.com/oauth/token
+// https://curbmap.com/oauth/token
 
 const styles = StyleSheet.create({
   container: {
@@ -34,37 +35,32 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-});
+})
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      signedIn: false,
-      checkedSignIn: false
-    };
-  }
-
-  render() {
-    if (!this.state.checkedSignIn) {
-      return null;
-    }
-
-    const FirstView = createRootNavigator(this.state.signedIn);
-    return <FirstView />;
+  state = {
+    signedIn: false,
+    checkedSignIn: false,
   }
 
   componentWillMount() {
     isSignedIn()
-        .then(result => {
-          this.setState({signedIn: result, checkedSignIn: true})
-        })
-        .catch(err => {
-          alert('ERROR:' + err);
-        })
+      .then((result) => {
+        this.setState({ signedIn: result, checkedSignIn: true })
+      })
+      .catch((err) => {
+        console.error(`ERROR:${err}`)
+      })
   }
 
+  render() {
+    if (!this.state.checkedSignIn) {
+      return null
+    }
+
+    const FirstView = createRootNavigator(this.state.signedIn)
+    return <FirstView />
+  }
 }
 
-export default App;
+export default App

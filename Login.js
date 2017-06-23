@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { StyleSheet, View, Image, TextInput, Dimensions, AsyncStorage} from 'react-native'
-import { Card, Button } from "react-native-elements";
-import MenuIcon from './MenuIcon'
+import { StyleSheet, View, Image, TextInput, Dimensions, AsyncStorage } from 'react-native'
+import { Card, Button } from 'react-native-elements'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-const {width, height} = Dimensions.get("window");
+import MenuIcon from './MenuIcon'
+import curbmapImg from './assets/img/curbmap.png'
 
+const { width, height } = Dimensions.get('window')
 
 const styles = StyleSheet.create({
   full: {
@@ -16,7 +17,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     alignItems: 'center',
-    backgroundColor: '#4e2e2e'
+    backgroundColor: '#4e2e2e',
   },
   loginbox: {
     marginTop: 10,
@@ -27,174 +28,168 @@ const styles = StyleSheet.create({
     borderColor: '#999',
     borderWidth: 1,
     borderRadius: 5,
-
   },
   buttonlogin: {
     marginTop: 10,
-    borderRadius: 5
+    borderRadius: 5,
   },
   loginholder: {
     flexDirection: 'column',
     padding: 10,
     height: height * 0.7,
-    width: width * 0.8
+    width: width * 0.8,
   },
   loginimageview: {
     alignItems: 'center',
   },
   loginimage: {
-    height:150,
-    width: 150
+    height: 150,
+    width: 150,
   },
   loginViewHolder: {
     marginTop: 60,
-    marginBottom: 50
+    marginBottom: 50,
   },
   card: {
-    backgroundColor: '#4e2e2e'
+    backgroundColor: '#4e2e2e',
   },
-  cardwrapper: {
-  }
-});
-
+  cardwrapper: {},
+})
 
 class Login extends Component {
   doLogin = () => {
-    this.stateValues.buttonLoginDisabled = true;
+    this.stateValues.buttonLoginDisabled = true
     fetch('https://curbmap.com/token')
-        .then((response) => response.text())
-        .then((responseText) => {
-          this.setState({XSRF: responseText})
-        })
-        .then(() => {
-          fetch('https://curbmap.com/login', {
-            method: 'post',
+      .then(response => response.text())
+      .then((responseText) => {
+        this.setState({ XSRF: responseText })
+      })
+      .then(() => {
+        fetch('https://curbmap.com/login', {
+          method: 'post',
+          mode: 'cors',
+          headers: {
+            'X-XSRF-TOKEN': this.state.XSRF,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: `username=${this.state.user}&password=${this.state.pass}`,
+        }).then((responseLogin) => {
+          fetch('https://curbmap.com/user', {
+            method: 'get',
             mode: 'cors',
             headers: {
-              "X-XSRF-TOKEN": this.state.XSRF,
-              "Content-Type": "application/x-www-form-urlencoded"
+              'X-XSRF-TOKEN': this.state.XSRF,
             },
-            body: "username="+this.state.user+"&password="+this.state.pass
           })
-              .then((responseLogin) => {
-                fetch('https://curbmap.com/user', {
-                  method: 'get',
-                  mode: 'cors',
-                  headers: {
-                    "X-XSRF-TOKEN": this.state.XSRF
-                  }
-                })
-                    .then((responseUser) => responseUser.json())
-                    .then((responseUserJSON) => {
-                      fetch('https://curbmap.com/oauth/token', {
-                        method: 'post',
-                        headers: {
-                          "Content-Type": "application/x-www-form-urlencoded",
-                          "Authorization": "Basic YW5kcm9pZDFTOVdnYU05bHJJNnVqcXo0NDZ2Q3JQUktJNHA1MXFQOnJWZUI4NWhXVDN0REkxYU5LSVhiOTlyTTRLNDN0ME1B"
-                        },
-                        body: "username="+this.state.user+"&password="+this.state.pass+"&grant_type=password"
-                      })
-                          .then((oauthToken)=> oauthToken.json())
-                          .then((oauthTokenJSON) => {
-                            let datestring = new Date(new Date().getTime() + oauthTokenJSON['expires_in'] * 1000).toISOString();
-                            console.log("date");
-                            AsyncStorage.setItem("AUTH_TOKEN", oauthTokenJSON['access_token']);
-                            console.log("authtoken");
-                            AsyncStorage.setItem("REFRESH_TOKEN", oauthTokenJSON['refresh_token']);
-                            console.log("refreshtoken");
-                            AsyncStorage.setItem("EXPIRES_AT", datestring);
-                            console.log("date again");
-                            AsyncStorage.setItem("USERNAME", this.state.user);
-                            console.log("username");
-                            AsyncStorage.setItem("PASSWORD", this.state.pass); // if user needs to request a new oauth token
-                            console.log("password");
-                            AsyncStorage.setItem("BADGE", responseUserJSON.badge);
-                            console.log("badge");
-                            AsyncStorage.setItem("SCORE", ""+responseUserJSON.score);
-                            console.log("score");
-                            this.props.navigation.navigate('SignedIn');
-
-                          })
-                    })
-                    .catch((e) => {console.log("Error in login: "+ e); this.stateValues.buttonLoginDisabled = false})
+            .then(responseUser => responseUser.json())
+            .then((responseUserJSON) => {
+              fetch('https://curbmap.com/oauth/token', {
+                method: 'post',
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  Authorization: 'Basic YW5kcm9pZDFTOVdnYU05bHJJNnVqcXo0NDZ2Q3JQUktJNHA1MXFQOnJWZUI4NWhXVDN0REkxYU5LSVhiOTlyTTRLNDN0ME1B',
+                },
+                body: `username=${
+                  this.state.user
+                  }&password=${
+                  this.state.pass
+                  }&grant_type=password`,
               })
+                .then(oauthToken => oauthToken.json())
+                .then((oauthTokenJSON) => {
+                  let datestring = new Date(
+                    new Date().getTime() + oauthTokenJSON.expires_in * 1000,
+                  ).toISOString()
+                  console.log('date')
+                  AsyncStorage.setItem('AUTH_TOKEN', oauthTokenJSON.access_token)
+                  console.log('authtoken')
+                  AsyncStorage.setItem('REFRESH_TOKEN', oauthTokenJSON.refresh_token)
+                  console.log('refreshtoken')
+                  AsyncStorage.setItem('EXPIRES_AT', datestring)
+                  console.log('date again')
+                  AsyncStorage.setItem('USERNAME', this.state.user)
+                  console.log('username')
+                  AsyncStorage.setItem('PASSWORD', this.state.pass) // if user needs to request a new oauth token
+                  console.log('password')
+                  AsyncStorage.setItem('BADGE', responseUserJSON.badge)
+                  console.log('badge')
+                  AsyncStorage.setItem('SCORE', `${responseUserJSON.score}`)
+                  console.log('score')
+                  this.props.navigation.navigate('SignedIn')
+                })
+            })
+            .catch((e) => {
+              console.log(`Error in login: ${e}`)
+              this.stateValues.buttonLoginDisabled = false
+            })
         })
-  };
-
-  constructor(props, context) {
-    super(props, context);
-    this.stateValues = {buttonLoginDisabled: false};
+      })
   }
 
-  componentDidMount() {
-  }
+  stateValues = { buttonLoginDisabled: false }
 
   static navigationOptions = {
     drawerLabel: 'Login',
-    drawerIcon: ({tintColor}) => (
-        <Image
-            style={[styles.icon, {tintColor}]}
-        />
-    ),
-  };
+    drawerIcon: ({ tintColor }) => <Image style={[styles.icon, { tintColor }]} />,
+  }
 
-  _submit = () => {
-    this.doLogin();
-  };
+  submit = () => {
+    this.doLogin()
+  }
 
   render() {
     return (
-        <View style={styles.full}>
-          <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
-          <View style={styles.loginViewHolder}>
-            <Card
-                style={styles.card}
-                wrapperStyle={styles.cardwrapper}>
-              <KeyboardAwareScrollView style={styles.loginholder} ref={(scrollObj) => {this.scrollView = scrollObj}}>
-                <View style={styles.loginimageview}>
-                  <Image
-                      style={styles.loginimage}
-                      source={require('./assets/img/curbmap.png')}
-                  />
-                </View>
-                <TextInput
-                    ref="userInput"
-                    autoCorrect={false}
-                    autoCapitalize='none'
-                    style={styles.loginbox}
-                    onChangeText={(text) => this.setState({user: text})}
-                    placeholder='username'
-                    placeholderTextColor='lightgray'
-                    value={this.stateValues.user}
-                     />
+      <View style={styles.full}>
+        <MenuIcon onPress={() => this.props.navigation.navigate('DrawerOpen')} />
+        <View style={styles.loginViewHolder}>
+          <Card style={styles.card} wrapperStyle={styles.cardwrapper}>
+            <KeyboardAwareScrollView
+              style={styles.loginholder}
+              ref={(scrollObj) => {
+                this.scrollView = scrollObj
+              }}
+            >
+              <View style={styles.loginimageview}>
+                <Image style={styles.loginimage} source={curbmapImg} />
+              </View>
+              <TextInput
+                ref="userInput"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.loginbox}
+                onChangeText={text => this.setState({ user: text })}
+                placeholder="username"
+                placeholderTextColor="lightgray"
+                value={this.stateValues.user}
+              />
 
-                <TextInput
-                    ref="passInput"
-                    autoCorrect={false}
-                    autoCapitalize='none'
-                    style={styles.loginbox}
-                    onChangeText={(text) => this.setState({pass: text})}
-                    placeholder="password"
-                    placeholderTextColor='lightgray'
-                    secureTextEntry={true}
-                    value={this.stateValues.pass}
-                    />
+              <TextInput
+                ref="passInput"
+                autoCorrect={false}
+                autoCapitalize="none"
+                style={styles.loginbox}
+                onChangeText={text => this.setState({ pass: text })}
+                placeholder="password"
+                placeholderTextColor="lightgray"
+                secureTextEntry
+                value={this.stateValues.pass}
+              />
 
-                <Button
-                    title="Login"
-                    onPress={() => this._submit()}
-                    color="#fcfcfc"
-                    backgroundColor="#6147d0"
-                    fontSize={20}
-                    buttonStyle={styles.buttonlogin}
-                    disabled={this.stateValues.buttonLoginDisabled}
-                >
-                  Login
-                </Button>
-              </KeyboardAwareScrollView>
-            </Card>
-            </View>
+              <Button
+                title="Login"
+                onPress={() => this.submit()}
+                color="#fcfcfc"
+                backgroundColor="#6147d0"
+                fontSize={20}
+                buttonStyle={styles.buttonlogin}
+                disabled={this.stateValues.buttonLoginDisabled}
+              >
+                Login
+              </Button>
+            </KeyboardAwareScrollView>
+          </Card>
         </View>
+      </View>
     )
   }
 }

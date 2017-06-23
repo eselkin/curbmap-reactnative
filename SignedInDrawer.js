@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import {DrawerNavigator, DrawerItems, DrawerView} from 'react-navigation';
-import { COLOR, ThemeProvider } from 'react-native-material-ui';
-import { StyleSheet, View, Image, Text, Dimensions, StatusBar, AsyncStorage} from 'react-native'
-import { Button } from "react-native-elements";
-const {width, height} = Dimensions.get("window");
+import { DrawerNavigator, DrawerItems, DrawerView } from 'react-navigation'
+import { COLOR, ThemeProvider } from 'react-native-material-ui'
+import { StyleSheet, View, Image, Text, Dimensions, StatusBar, AsyncStorage } from 'react-native'
+import { Button } from 'react-native-elements'
+
+const { width, height } = Dimensions.get('window')
 
 const uiTheme = {
   palette: {
@@ -18,30 +19,30 @@ const uiTheme = {
   },
   avatar: {
     container: {
-      backgroundColor: '#333'
-    }
-  }
-};
+      backgroundColor: '#333',
+    },
+  },
+}
 
 const styles = StyleSheet.create({
   container: {
-    height: height,
+    height,
     backgroundColor: '#101010',
-    marginTop: 30
+    marginTop: 30,
   },
   headerContainer: {
     height: height * 0.25,
     flexDirection: 'row',
-    flex: 1
+    flex: 1,
   },
   header: {
     marginTop: 30,
-    backgroundColor: "#707070",
+    backgroundColor: '#707070',
   },
   bodySection: {
     height: height * 0.7,
-    backgroundColor: "#4e2e2e",
-    marginTop: 3
+    backgroundColor: '#4e2e2e',
+    marginTop: 3,
   },
   avatar: {
     margin: 10,
@@ -52,138 +53,138 @@ const styles = StyleSheet.create({
     width: 100,
     borderRadius: 100,
     alignItems: 'center',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   userinfo: {
     height: height * 0.5,
     marginTop: 30,
-    backgroundColor: "#707070",
-    flex: 1
+    backgroundColor: '#707070',
+    flex: 1,
   },
   username: {
     color: 'white',
-    fontSize: 20
+    fontSize: 20,
   },
   userscore: {
     fontSize: 14,
     color: 'white',
-    marginTop: 5
+    marginTop: 5,
   },
   menuitem: {
-    marginTop: 5
+    marginTop: 5,
   },
   menubutton: {
-    backgroundColor: 'rgba(200,200,200,0.0)'
-  }
-});
-
-
+    backgroundColor: 'rgba(200,200,200,0.0)',
+  },
+})
 
 export default class SignedInDrawer extends Component {
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
     this.state = {
       username: '',
       password: '',
       score: '',
       authtoken: '',
       expiresat: '',
-      badge: 'undefined'
-    };
-    AsyncStorage.multiGet(['USERNAME', 'PASSWORD', 'AUTH_TOKEN', 'EXPIRES_AT', 'BADGE', 'SCORE']).then((stores) => {
-      stores.map((result, i, store) => {
-        switch (store[i][0]){
-          case "USERNAME":
-            this.setState({username: store[i][1]});
-            break;
-          case "PASSWORD":
-            this.setState({password: store[i][1]});
-            break;
-          case "AUTH_TOKEN":
-            this.setState({authtoken: store[i][1]});
-            break;
-          case "EXPIRES_AT":
-            this.setState({expiresat: store[i][1]});
-            break;
-          case "BADGE":
-            this.setState({badge: store[i][1]});
-            break;
-          case "SCORE":
-            this.setState({score: store[i][1]});
-            break;
-        }
+      badge: 'undefined',
+    }
+    AsyncStorage.multiGet(['USERNAME', 'PASSWORD', 'AUTH_TOKEN', 'EXPIRES_AT', 'BADGE', 'SCORE'])
+      .then((stores) => {
+        stores.map((result, i, store) => {
+          switch (store[i][0]) {
+            case 'USERNAME':
+              this.setState({ username: store[i][1] })
+              break
+            case 'PASSWORD':
+              this.setState({ password: store[i][1] })
+              break
+            case 'AUTH_TOKEN':
+              this.setState({ authtoken: store[i][1] })
+              break
+            case 'EXPIRES_AT':
+              this.setState({ expiresat: store[i][1] })
+              break
+            case 'BADGE':
+              this.setState({ badge: store[i][1] })
+              break
+            case 'SCORE':
+              this.setState({ score: store[i][1] })
+              break
+          }
+        })
       })
-    }).catch((err) => {
-      console.log("ERROR:"+ err);
-    })
+      .catch((err) => {
+        console.log(`ERROR:${err}`)
+      })
   }
 
   _onPress(value, props) {
-    this.props.navigation.navigate(value, props);
+    this.props.navigation.navigate(value, props)
   }
 
   render() {
-    let badge;
-    switch(this.state.badge) {
-      case "beginner":
-        badge = <Image source={require("./assets/img/beginner.png")} />;
-        break;
+    let badge
+    switch (this.state.badge) {
+      case 'beginner':
+        badge = <Image source={require('./assets/img/beginner.png')} />
+        break
       default:
-        badge = <Image source={require("./assets/img/undefined.png")} />;
-        break;
+        badge = <Image source={require('./assets/img/undefined.png')} />
+        break
     }
     return (
-        <ThemeProvider uiTheme={uiTheme}>
-          <View style={styles.container}>
-            <View style={styles.headerContainer}>
-              <View style={styles.header}>
-                <View style={styles.avatar}>
-                  {badge}
-                </View>
-              </View>
-              <View style={styles.userinfo}>
-                <Text style={styles.username}> </Text>
-                <Text style={styles.username}>{this.state.username}</Text>
-                <Text style={styles.userscore}>SCORE: {this.state.score}</Text>
+      <ThemeProvider uiTheme={uiTheme}>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <View style={styles.header}>
+              <View style={styles.avatar}>
+                {badge}
               </View>
             </View>
-            <View style={styles.bodySection}>
-              <Button
-                  raised
-                  large
-                  containerViewStyle={styles.menuitem}
-                  buttonStyle={styles.menubutton}
-                  color='rgba(255,255,255,1)'
-                  onPress={() => this._onPress('Home',
-                      {
-                        username: this.state.username,
-                        password: this.state.password,
-                        authtoken: this.state.authtoken,
-                        expiresat: this.state.expiresat
-                      })}
-                  title='Home'
-                  fontSize={20}
-                  icon={{name: 'home', size: 32}}
-              >
-                Home
-              </Button>
-              <Button
-                  raised
-                  large
-                  containerViewStyle={styles.menuitem}
-                  buttonStyle={styles.menubutton}
-                  color='rgba(255,255,255,1)'
-                  onPress={() => this._onPress('Settings')}
-                  title='Settings'
-                  fontSize={20}
-                  icon={{name: 'settings', size: 32}}
-              >
-                Settings
-              </Button>
+            <View style={styles.userinfo}>
+              <Text style={styles.username} />
+              <Text style={styles.username}>{this.state.username}</Text>
+              <Text style={styles.userscore}>SCORE: {this.state.score}</Text>
             </View>
-
           </View>
-        </ThemeProvider>
-    );
+          <View style={styles.bodySection}>
+            <Button
+              raised
+              large
+              containerViewStyle={styles.menuitem}
+              buttonStyle={styles.menubutton}
+              color="rgba(255,255,255,1)"
+              onPress={() =>
+                this._onPress('Home', {
+                  username: this.state.username,
+                  password: this.state.password,
+                  authtoken: this.state.authtoken,
+                  expiresat: this.state.expiresat,
+                })}
+              title="Home"
+              fontSize={20}
+              icon={{ name: 'home', size: 32 }}
+            >
+              Home
+            </Button>
+            <Button
+              raised
+              large
+              containerViewStyle={styles.menuitem}
+              buttonStyle={styles.menubutton}
+              color="rgba(255,255,255,1)"
+              onPress={() => this._onPress('Settings')}
+              title="Settings"
+              fontSize={20}
+              icon={{ name: 'settings', size: 32 }}
+            >
+              Settings
+            </Button>
+          </View>
+
+        </View>
+      </ThemeProvider>
+    )
   }
 }
