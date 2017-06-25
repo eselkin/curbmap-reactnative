@@ -62,7 +62,7 @@ class Map extends Component {
     }
     this.setState({ region })
     if (this.props){
-      if (this.props && this.props.expiresat) {
+      if (this.props.expiresat) {
         if ((new Date(this.props.expiresat)) <= (new Date())) {
           // console.log("Out of date");
           // Request new auth token
@@ -74,15 +74,16 @@ class Map extends Component {
               (this.state.region.longitude - LONGITUDE_DELTA),
               (this.state.region.latitude + LATITUDE_DELTA),
               (this.state.region.longitude + LONGITUDE_DELTA))
-
-            console.log(urlstringfixed)
+            // This is a little slow, will find a way to speed it up...
+            // maybe compression is not being applied
+            // Maybe the DB is too slow
             fetch(urlstringfixed, {
               method: 'get',
               headers: {
-                'Authorization': ' Bearer ' + this.props.authtoken
+                Authorization: ' Bearer ' + this.props.authtoken
               }
-            }).then((lines) => lines.json())
-              .then((linesJSON)=> {
+            }).then(lines => lines.json())
+              .then((linesJSON) => {
                 console.log(linesJSON)
                 // do something with data!
               })
