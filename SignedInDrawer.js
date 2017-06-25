@@ -86,7 +86,7 @@ export default class SignedInDrawer extends Component {
       password: '',
       score: '',
       authtoken: '',
-      expiresat: '',
+      expiresAt: '',
       badge: 'undefined',
     }
     AsyncStorage.multiGet(['USERNAME', 'PASSWORD', 'AUTH_TOKEN', 'EXPIRES_AT', 'BADGE', 'SCORE'])
@@ -103,7 +103,7 @@ export default class SignedInDrawer extends Component {
               this.setState({ authtoken: store[i][1] })
               break
             case 'EXPIRES_AT':
-              this.setState({ expiresat: store[i][1] })
+              this.setState({ expiresAt: store[i][1] })
               break
             case 'BADGE':
               this.setState({ badge: store[i][1] })
@@ -160,7 +160,7 @@ export default class SignedInDrawer extends Component {
                   username: this.state.username,
                   password: this.state.password,
                   authtoken: this.state.authtoken,
-                  expiresat: this.state.expiresat,
+                  expiresAt: this.state.expiresAt,
                 })}
               title="Home"
               fontSize={20}

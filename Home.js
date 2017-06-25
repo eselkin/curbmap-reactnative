@@ -17,16 +17,13 @@ class Home extends Component {
   static navigationOptions = {
     drawerLabel: 'Map Home',
     drawerIcon: ({ tintColor }) => <Image style={[styles.icon, { tintColor }]} />,
-  };
+  }
 
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      username: '',
-      password: '',
-      authtoken: '',
-      expiresat: '',
-    }
+  state = {
+    username: '',
+    password: '',
+    authtoken: '',
+    expiresAt: '',
   }
 
   render() {
@@ -39,7 +36,7 @@ class Home extends Component {
           username={this.props.navigation.state.params.username}
           password={this.props.navigation.state.params.password}
           authtoken={this.props.navigation.state.params.authtoken}
-          expiresat={this.props.navigation.state.params.expiresat}
+          expiresAt={this.props.navigation.state.params.expiresAt}
         />
       )
     }

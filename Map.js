@@ -11,17 +11,17 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-});
+})
 
-function template (strings, ...keys){
+function template (strings, ...keys) {
   return (function (...values) {
-    var dict = values[values.length - 1] || {};
-    var result = [strings[0]];
+    var dict = values[values.length - 1] || {}
+    var result = [strings[0]]
     keys.forEach(function (key, i) {
-      var value = Number.isInteger(key) ? values[key] : dict[key];
-      result.push(value, strings[i + 1]);
-    });
-    return result.join('');
+      var value = Number.isInteger(key) ? values[key] : dict[key]
+      result.push(value, strings[i + 1])
+    })
+    return result.join('')
   })
 }
 
@@ -61,44 +61,42 @@ class Map extends Component {
       LONGITUDE_DELTA = region.longitudeDelta  // from the zoom level at resting
     }
     this.setState({ region })
-    if (this.props){
-      if (this.props.expiresat) {
-        if ((new Date(this.props.expiresat)) <= (new Date())) {
-          // console.log("Out of date");
-          // Request new auth token
-        } else {
-          // console.log("Not out of date");
-          if (2*LONGITUDE_DELTA < 0.4) {
-            const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}`
-            const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
-              (this.state.region.longitude - LONGITUDE_DELTA),
-              (this.state.region.latitude + LATITUDE_DELTA),
-              (this.state.region.longitude + LONGITUDE_DELTA))
-            // This is a little slow, will find a way to speed it up...
-            // maybe compression is not being applied
-            // Maybe the DB is too slow
-            fetch(urlstringfixed, {
-              method: 'get',
-              headers: {
-                Authorization: ' Bearer ' + this.props.authtoken
-              }
-            }).then(lines => lines.json())
-              .then((linesJSON) => {
-                console.log(linesJSON)
-                // do something with data!
-              })
-          }
+    if (this.props.expiresAt) {
+      if ((new Date(this.props.expiresAt)) <= (new Date())) {
+        // console.log("Out of date")
+        // Request new auth token
+      } else {
+        // console.log("Not out of date")
+        if (2 * LONGITUDE_DELTA < 0.4) {
+          const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}`
+          const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
+            (this.state.region.longitude - LONGITUDE_DELTA),
+            (this.state.region.latitude + LATITUDE_DELTA),
+            (this.state.region.longitude + LONGITUDE_DELTA))
+          // This is a little slow, will find a way to speed it up...
+          // maybe compression is not being applied
+          // Maybe the DB is too slow
+          fetch(urlstringfixed, {
+            method: 'get',
+            headers: {
+              Authorization: ' Bearer ' + this.props.authtoken
+            }
+          }).then(lines => lines.json())
+            .then((linesJSON) => {
+              console.log(linesJSON)
+              // do something with data!
+            })
         }
       }
     }
-  };
+  }
 
   watchLocation = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const { status } = await Permissions.askAsync(Permissions.LOCATION)
     if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied',
-      });
+      })
       return
     }
 
@@ -119,10 +117,10 @@ class Map extends Component {
         })
       },
     )
-  };
+  }
 
   canGetLocation = async () => {
-    const { locationServicesEnabled } = await Location.getProviderStatusAsync();
+    const { locationServicesEnabled } = await Location.getProviderStatusAsync()
 
     if (!locationServicesEnabled) {
       // Open location settings
