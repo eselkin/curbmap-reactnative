@@ -11,9 +11,23 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
-})
-const LATITUDE_DELTA = 0.1922
-const LONGITUDE_DELTA = 0.1421
+});
+
+function template (strings, ...keys){
+  return (function (...values) {
+    var dict = values[values.length - 1] || {};
+    var result = [strings[0]];
+    keys.forEach(function (key, i) {
+      var value = Number.isInteger(key) ? values[key] : dict[key];
+      result.push(value, strings[i + 1]);
+    });
+    return result.join('');
+  })
+}
+
+
+let LATITUDE_DELTA = 0.1922
+let LONGITUDE_DELTA = 0.121
 
 class Map extends Component {
   state = {
@@ -33,7 +47,7 @@ class Map extends Component {
 
   componentWillUnmount() {
     if (this.watcher) {
-      this.watcher()
+      //this.watcher()
     }
   }
 
@@ -41,12 +55,49 @@ class Map extends Component {
     this.setState({ region })
   }
 
+  onRegionChangeComplete = (region) => {
+    if (region.latitudeDelta < 10) {
+      LATITUDE_DELTA = region.latitudeDelta
+      LONGITUDE_DELTA = region.longitudeDelta  // from the zoom level at resting
+    }
+    this.setState({ region })
+    if (this.props){
+      if (this.props && this.props.expiresat) {
+        if ((new Date(this.props.expiresat)) <= (new Date())) {
+          // console.log("Out of date");
+          // Request new auth token
+        } else {
+          // console.log("Not out of date");
+          if (2*LONGITUDE_DELTA < 0.4) {
+            const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}`
+            const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
+              (this.state.region.longitude - LONGITUDE_DELTA),
+              (this.state.region.latitude + LATITUDE_DELTA),
+              (this.state.region.longitude + LONGITUDE_DELTA))
+
+            console.log(urlstringfixed)
+            fetch(urlstringfixed, {
+              method: 'get',
+              headers: {
+                'Authorization': ' Bearer ' + this.props.authtoken
+              }
+            }).then((lines) => lines.json())
+              .then((linesJSON)=> {
+                console.log(linesJSON)
+                // do something with data!
+              })
+          }
+        }
+      }
+    }
+  };
+
   watchLocation = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION)
+    const { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied',
-      })
+      });
       return
     }
 
@@ -67,10 +118,10 @@ class Map extends Component {
         })
       },
     )
-  }
+  };
 
   canGetLocation = async () => {
-    const { locationServicesEnabled } = await Location.getProviderStatusAsync()
+    const { locationServicesEnabled } = await Location.getProviderStatusAsync();
 
     if (!locationServicesEnabled) {
       // Open location settings
@@ -88,6 +139,7 @@ class Map extends Component {
         style={styles.map}
         region={this.state.region}
         onRegionChange={this.onRegionChange}
+        onRegionChangeComplete={this.onRegionChangeComplete}
         loadingEnabled
         showsUserLocation
       />
