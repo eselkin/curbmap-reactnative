@@ -35,8 +35,7 @@ class Home extends Component {
         <Map
           username={this.props.navigation.state.params.username}
           password={this.props.navigation.state.params.password}
-          authtoken={this.props.navigation.state.params.authtoken}
-          expiresAt={this.props.navigation.state.params.expiresAt}
+          session={this.props.navigation.state.params.session}
         />
       )
     }

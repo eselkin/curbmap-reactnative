@@ -59,72 +59,27 @@ const styles = StyleSheet.create({
 class Login extends Component {
   doLogin = () => {
     this.stateValues.buttonLoginDisabled = true
-    fetch('https://curbmap.com/token')
-      .then(response => response.text())
-      .then((responseText) => {
-        this.setState({ XSRF: responseText })
+    fetch('https://curbmap.com/login', {
+      method: 'post',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: `username=${this.state.user}&password=${this.state.pass}`,
+    }).then(responseUser => responseUser.json())
+      .then((responseUserJSON) => {
+        AsyncStorage.setItem('SESSION', responseUserJSON.session)
+        AsyncStorage.setItem('USERNAME', this.state.user)
+        AsyncStorage.setItem('PASSWORD', this.state.pass) // if user needs to request a new oauth token
+        AsyncStorage.setItem('BADGE', responseUserJSON.badge)
+        AsyncStorage.setItem('SCORE', `${responseUserJSON.score}`)
+        this.props.navigation.navigate('SignedIn')
       })
-      .then(() => {
-        fetch('https://curbmap.com/login', {
-          method: 'post',
-          mode: 'cors',
-          headers: {
-            'X-XSRF-TOKEN': this.state.XSRF,
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: `username=${this.state.user}&password=${this.state.pass}`,
-        }).then((responseLogin) => {
-          fetch('https://curbmap.com/user', {
-            method: 'get',
-            mode: 'cors',
-            headers: {
-              'X-XSRF-TOKEN': this.state.XSRF,
-            },
-          })
-            .then(responseUser => responseUser.json())
-            .then((responseUserJSON) => {
-              fetch('https://curbmap.com/oauth/token', {
-                method: 'post',
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  Authorization: 'Basic YW5kcm9pZDFTOVdnYU05bHJJNnVqcXo0NDZ2Q3JQUktJNHA1MXFQOnJWZUI4NWhXVDN0REkxYU5LSVhiOTlyTTRLNDN0ME1B',
-                },
-                body: `username=${
-                  this.state.user
-                  }&password=${
-                  this.state.pass
-                  }&grant_type=password`,
-              })
-                .then(oauthToken => oauthToken.json())
-                .then((oauthTokenJSON) => {
-                  let datestring = new Date(
-                    new Date().getTime() + oauthTokenJSON.expires_in * 1000,
-                  ).toISOString()
-                  console.log('date')
-                  AsyncStorage.setItem('AUTH_TOKEN', oauthTokenJSON.access_token)
-                  console.log('authtoken')
-                  AsyncStorage.setItem('REFRESH_TOKEN', oauthTokenJSON.refresh_token)
-                  console.log('refreshtoken')
-                  AsyncStorage.setItem('EXPIRES_AT', datestring)
-                  console.log('date again')
-                  AsyncStorage.setItem('USERNAME', this.state.user)
-                  console.log('username')
-                  AsyncStorage.setItem('PASSWORD', this.state.pass) // if user needs to request a new oauth token
-                  console.log('password')
-                  AsyncStorage.setItem('BADGE', responseUserJSON.badge)
-                  console.log('badge')
-                  AsyncStorage.setItem('SCORE', `${responseUserJSON.score}`)
-                  console.log('score')
-                  this.props.navigation.navigate('SignedIn')
-                })
-            })
-            .catch((e) => {
-              console.log(`Error in login: ${e}`)
-              this.stateValues.buttonLoginDisabled = false
-            })
-        })
+      .catch((e) => {
+        console.log(`Error in login: ${e}`)
+        this.stateValues.buttonLoginDisabled = false
       })
-  }
+}
 
   stateValues = { buttonLoginDisabled: false }
 

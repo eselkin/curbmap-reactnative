@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native'
 
 export const isSignedIn = () => new Promise((resolve, reject) => {
-  AsyncStorage.getItem('AUTH_TOKEN')
+  AsyncStorage.getItem('SESSION')
       .then((res) => {
         if (res !== null) {
           resolve(true)
@@ -13,9 +13,7 @@ export const isSignedIn = () => new Promise((resolve, reject) => {
 })
 
 export const onSignOut = () => {
-  AsyncStorage.removeItem('AUTH_TOKEN')
-  AsyncStorage.removeItem('REFRESH_TOKEN')
-  AsyncStorage.removeItem('EXPIRES_AT')
+  AsyncStorage.removeItem('SESSION')
   AsyncStorage.removeItem('USERNAME')
   return AsyncStorage.removeItem('PASSWORD')
 }

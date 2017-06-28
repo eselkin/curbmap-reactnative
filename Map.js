@@ -60,33 +60,32 @@ class Map extends Component {
       LATITUDE_DELTA = region.latitudeDelta
       LONGITUDE_DELTA = region.longitudeDelta  // from the zoom level at resting
     }
-    this.setState({ region })
-    if (this.props.expiresAt) {
-      if ((new Date(this.props.expiresAt)) <= (new Date())) {
-        // console.log("Out of date")
-        // Request new auth token
-      } else {
-        // console.log("Not out of date")
-        if (2 * LONGITUDE_DELTA < 0.4) {
-          const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}`
-          const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
-            (this.state.region.longitude - LONGITUDE_DELTA),
-            (this.state.region.latitude + LATITUDE_DELTA),
-            (this.state.region.longitude + LONGITUDE_DELTA))
-          // This is a little slow, will find a way to speed it up...
-          // maybe compression is not being applied
-          // Maybe the DB is too slow
-          fetch(urlstringfixed, {
-            method: 'get',
-            headers: {
-              Authorization: ' Bearer ' + this.props.authtoken
-            }
-          }).then(lines => lines.json())
-            .then((linesJSON) => {
-              console.log(linesJSON)
-              // do something with data!
-            })
-        }
+    this.setState({region})
+    if (this.props.session) {
+      if (2 * LONGITUDE_DELTA < 0.4) {
+        // temporary fix for huge amounts of data, adding the user=... attribute
+        const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}&user=${4}`
+        const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
+          (this.state.region.longitude - LONGITUDE_DELTA),
+          (this.state.region.latitude + LATITUDE_DELTA),
+          (this.state.region.longitude + LONGITUDE_DELTA),
+          this.props.username,
+        )
+        // This is a little slow, will find a way to speed it up...
+        // maybe compression is not being applied
+        // Maybe the DB is too slow
+        fetch(urlstringfixed, {
+          method: 'get',
+          headers: {
+            session: this.props.session,
+          }
+        }).then(lines => {console.log(lines); return lines.json() })
+          .then((linesJSON) => {
+            console.log(linesJSON)
+            // do something with data!
+          }).catch((e) => {
+            console.log(e)
+        })
       }
     }
   }
@@ -130,7 +129,7 @@ class Map extends Component {
     }
 
     return locationServicesEnabled
-  }
+  };
 
   render() {
     return (
