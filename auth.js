@@ -2,14 +2,14 @@ import { AsyncStorage } from 'react-native'
 
 export const isSignedIn = () => new Promise((resolve, reject) => {
   AsyncStorage.getItem('SESSION')
-      .then((res) => {
-        if (res !== null) {
-          resolve(true)
-        } else {
-          resolve(false)
-        }
-      })
-      .catch(err => reject(err))
+  .then((res) => {
+    if (res !== null) {
+      resolve(true)
+    } else {
+      resolve(false)
+    }
+  })
+  .catch(err => reject(err))
 })
 
 export const onSignOut = () => {

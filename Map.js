@@ -1,7 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component, fetch } from 'react'
 import MapView from 'react-native-maps'
 import { StyleSheet } from 'react-native'
 import { Permissions, IntentLauncherAndroid, Location } from 'expo'
+import PropTypes from 'prop-types'
 
 const styles = StyleSheet.create({
   map: {
@@ -13,18 +14,17 @@ const styles = StyleSheet.create({
   },
 })
 
-function template (strings, ...keys) {
-  return (function (...values) {
-    var dict = values[values.length - 1] || {}
-    var result = [strings[0]]
-    keys.forEach(function (key, i) {
-      var value = Number.isInteger(key) ? values[key] : dict[key]
+function template(strings, ...keys) {
+  return ((...values) => {
+    const dict = values[values.length - 1] || {}
+    const result = [strings[0]]
+    keys.forEach((key, i) => {
+      const value = Number.isInteger(key) ? values[key] : dict[key]
       result.push(value, strings[i + 1])
     })
     return result.join('')
   })
 }
-
 
 let LATITUDE_DELTA = 0.1922
 let LONGITUDE_DELTA = 0.121
@@ -60,36 +60,31 @@ class Map extends Component {
       LATITUDE_DELTA = region.latitudeDelta
       LONGITUDE_DELTA = region.longitudeDelta  // from the zoom level at resting
     }
-    this.setState({region})
+    this.setState({ region })
     if (this.props.session) {
       if (2 * LONGITUDE_DELTA < 0.4) {
         // temporary fix for huge amounts of data, adding the user=... attribute
         const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}&user=${4}`
         const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
-          (this.state.region.longitude - LONGITUDE_DELTA),
-          (this.state.region.latitude + LATITUDE_DELTA),
-          (this.state.region.longitude + LONGITUDE_DELTA),
-          this.props.username,
-        )
-        // This is a little slow, will find a way to speed it up...
-        // maybe compression is not being applied
-        // Maybe the DB is too slow
+        (this.state.region.longitude - LONGITUDE_DELTA),
+        (this.state.region.latitude + LATITUDE_DELTA),
+        (this.state.region.longitude + LONGITUDE_DELTA),
+        this.props.username)
         fetch(urlstringfixed, {
           method: 'get',
           headers: {
             session: this.props.session,
-          }
-        }).then(lines => {console.log(lines); return lines.json() })
-          .then((linesJSON) => {
-            console.log(linesJSON)
-            // do something with data!
-          }).catch((e) => {
-            console.log(e)
+          },
+        })
+        .then(lines => lines.json())
+        .then((linesJSON) => {
+          // do something with data!
+        }).catch((e) => {
+          console.log(e)
         })
       }
     }
   }
-
   watchLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION)
     if (status !== 'granted') {
@@ -118,6 +113,7 @@ class Map extends Component {
     )
   }
 
+
   canGetLocation = async () => {
     const { locationServicesEnabled } = await Location.getProviderStatusAsync()
 
@@ -130,7 +126,6 @@ class Map extends Component {
 
     return locationServicesEnabled
   };
-
   render() {
     return (
       <MapView
@@ -143,6 +138,16 @@ class Map extends Component {
       />
     )
   }
+}
+
+Map.propTypes = {
+  username: PropTypes.string,
+  session: PropTypes.string,
+}
+
+Map.defaultProps = {
+  username: 'curbmaptest',
+  session: '',
 }
 
 export default Map

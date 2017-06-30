@@ -57,6 +57,13 @@ const styles = StyleSheet.create({
 })
 
 class Login extends Component {
+  static navigationOptions = {
+    drawerLabel: 'Login',
+    drawerIcon: ({ tintColor }) => <Image style={[styles.icon, { tintColor }]} />,
+  }
+
+  stateValues = { buttonLoginDisabled: false }
+
   doLogin = () => {
     this.stateValues.buttonLoginDisabled = true
     fetch('https://curbmap.com/login', {
@@ -66,26 +73,20 @@ class Login extends Component {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: `username=${this.state.user}&password=${this.state.pass}`,
-    }).then(responseUser => responseUser.json())
-      .then((responseUserJSON) => {
-        AsyncStorage.setItem('SESSION', responseUserJSON.session)
-        AsyncStorage.setItem('USERNAME', this.state.user)
-        AsyncStorage.setItem('PASSWORD', this.state.pass) // if user needs to request a new oauth token
-        AsyncStorage.setItem('BADGE', responseUserJSON.badge)
-        AsyncStorage.setItem('SCORE', `${responseUserJSON.score}`)
-        this.props.navigation.navigate('SignedIn')
-      })
-      .catch((e) => {
-        console.log(`Error in login: ${e}`)
-        this.stateValues.buttonLoginDisabled = false
-      })
-}
-
-  stateValues = { buttonLoginDisabled: false }
-
-  static navigationOptions = {
-    drawerLabel: 'Login',
-    drawerIcon: ({ tintColor }) => <Image style={[styles.icon, { tintColor }]} />,
+    })
+    .then(responseUser => responseUser.json())
+    .then((responseUserJSON) => {
+      AsyncStorage.setItem('SESSION', responseUserJSON.session)
+      AsyncStorage.setItem('USERNAME', this.state.user)
+      AsyncStorage.setItem('PASSWORD', this.state.pass) // if user needs to request a new oauth token
+      AsyncStorage.setItem('BADGE', responseUserJSON.badge)
+      AsyncStorage.setItem('SCORE', `${responseUserJSON.score}`)
+      this.props.navigation.navigate('SignedIn')
+    })
+    .catch((e) => {
+      console.log(`Error in login: ${e}`)
+      this.stateValues.buttonLoginDisabled = false
+    })
   }
 
   submit = () => {
@@ -108,7 +109,6 @@ class Login extends Component {
                 <Image style={styles.loginimage} source={curbmapImg} />
               </View>
               <TextInput
-                ref="userInput"
                 autoCorrect={false}
                 autoCapitalize="none"
                 style={styles.loginbox}
@@ -119,7 +119,6 @@ class Login extends Component {
               />
 
               <TextInput
-                ref="passInput"
                 autoCorrect={false}
                 autoCapitalize="none"
                 style={styles.loginbox}

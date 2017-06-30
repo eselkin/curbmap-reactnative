@@ -6,8 +6,6 @@ import {
 import { isSignedIn } from './auth'
 import { createRootNavigator } from './routing'
 
-// https://curbmap.com/oauth/token
-
 const styles = StyleSheet.create({
   container: {
     paddingTop: StatusBar.currentHeight,
@@ -45,12 +43,12 @@ class App extends Component {
 
   componentWillMount() {
     isSignedIn()
-      .then((result) => {
-        this.setState({ signedIn: result, checkedSignIn: true })
-      })
-      .catch((err) => {
-        console.error(`ERROR:${err}`)
-      })
+    .then((result) => {
+      this.setState({ signedIn: result, checkedSignIn: true })
+    })
+    .catch((err) => {
+      console.error(`ERROR:${err}`)
+    })
   }
 
   render() {
