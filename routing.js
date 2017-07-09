@@ -41,6 +41,7 @@ const SignedIn = DrawerNavigator(
   },
   {
     contentComponent: SignedInDrawer,
+    initialRouteName: 'Home',
     contentOptions: {
       activeTintColor: '#e06e63',
       style: {

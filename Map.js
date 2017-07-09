@@ -1,4 +1,4 @@
-import React, { Component, fetch } from 'react'
+import React, { Component } from 'react'
 import MapView from 'react-native-maps'
 import { StyleSheet } from 'react-native'
 import { Permissions, IntentLauncherAndroid, Location } from 'expo'
@@ -47,7 +47,7 @@ class Map extends Component {
 
   componentWillUnmount() {
     if (this.watcher) {
-      //this.watcher()
+      // this.watcher()
     }
   }
 
@@ -72,6 +72,7 @@ class Map extends Component {
         this.props.username)
         fetch(urlstringfixed, {
           method: 'get',
+          mode: 'cors',
           headers: {
             session: this.props.session,
           },
@@ -79,12 +80,15 @@ class Map extends Component {
         .then(lines => lines.json())
         .then((linesJSON) => {
           // do something with data!
+          console.log('XXX')
+          console.log(linesJSON)
         }).catch((e) => {
           console.log(e)
         })
       }
     }
   }
+
   watchLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION)
     if (status !== 'granted') {
@@ -125,7 +129,8 @@ class Map extends Component {
     }
 
     return locationServicesEnabled
-  };
+  }
+
   render() {
     return (
       <MapView

@@ -81,7 +81,7 @@ class Login extends Component {
       AsyncStorage.setItem('PASSWORD', this.state.pass) // if user needs to request a new oauth token
       AsyncStorage.setItem('BADGE', responseUserJSON.badge)
       AsyncStorage.setItem('SCORE', `${responseUserJSON.score}`)
-      this.props.navigation.navigate('SignedIn')
+      this.props.navigation.navigate('SignedIn', { username: this.state.user, session: responseUserJSON.session })
     })
     .catch((e) => {
       console.log(`Error in login: ${e}`)

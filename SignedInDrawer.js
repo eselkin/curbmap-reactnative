@@ -85,8 +85,7 @@ export default class SignedInDrawer extends Component {
       username: '',
       password: '',
       score: '',
-      authtoken: '',
-      expiresAt: '',
+      session: '',
       badge: 'undefined',
     }
     AsyncStorage.multiGet(['USERNAME', 'PASSWORD', 'SESSION', 'BADGE', 'SCORE'])
