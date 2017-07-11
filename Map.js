@@ -81,7 +81,6 @@ class Map extends Component {
         .then(lines => lines.json())
         .then((linesJSON) => {
           this.state.polylineList = []
-            // do something with data!
           linesJSON.forEach((line) => {
             const lineObj = { coordinates: [], color: '#000' }
             line.coordinates.forEach((point) => {
@@ -147,16 +146,16 @@ class Map extends Component {
         timeInterval: 500,
         distanceInterval: 10,
       },
-            ({ coords }) => {
-              this.setState({
-                region: {
-                  latitude: coords.latitude,
-                  longitude: coords.longitude,
-                  latitudeDelta: LATITUDE_DELTA,
-                  longitudeDelta: LONGITUDE_DELTA,
-                },
-              })
-            },
+      ({ coords }) => {
+        this.setState({
+          region: {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          },
+        })
+      },
         )
   }
 
@@ -185,9 +184,9 @@ class Map extends Component {
         showsUserLocation
       >
         { this.state.polylineList.map(
-            polyline =>
-              <MapView.Polyline coordinates={polyline.coordinates} strokeColor={polyline.color} />,
-        )}
+                polyline =>
+                  <MapView.Polyline coordinates={polyline.coordinates} strokeColor={polyline.color} />,
+            )}
       </MapView>
     )
   }
