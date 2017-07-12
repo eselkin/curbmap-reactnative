@@ -13,5 +13,5 @@ jobs:
       - deploy:
           name: Exposing
           command:  |
-	     exp login -u "${EXPOUSER}" -p "${EXPOPASS}" --non-interactive
-	     exp publish -s "curbmap@gmail.com"
+              exp login -u "${EXPOUSER}" -p "${EXPOPASS}" --non-interactive
+              exp publish -s "curbmap@gmail.com"
