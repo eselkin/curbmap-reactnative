@@ -37,6 +37,7 @@ class Map extends Component {
       latitudeDelta: LATITUDE_DELTA,
       longitudeDelta: LONGITUDE_DELTA,
     },
+    polylineList: [],
   }
 
   componentWillMount() {
@@ -66,10 +67,10 @@ class Map extends Component {
         // temporary fix for huge amounts of data, adding the user=... attribute
         const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}&user=${4}`
         const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
-        (this.state.region.longitude - LONGITUDE_DELTA),
-        (this.state.region.latitude + LATITUDE_DELTA),
-        (this.state.region.longitude + LONGITUDE_DELTA),
-        this.props.username)
+          (this.state.region.longitude - LONGITUDE_DELTA),
+          (this.state.region.latitude + LATITUDE_DELTA),
+          (this.state.region.longitude + LONGITUDE_DELTA),
+          this.props.username)
         fetch(urlstringfixed, {
           method: 'get',
           mode: 'cors',
@@ -77,16 +78,57 @@ class Map extends Component {
             session: this.props.session,
           },
         })
-        .then(lines => lines.json())
-        .then((linesJSON) => {
-          // do something with data!
-          console.log('XXX')
-          console.log(linesJSON)
-        }).catch((e) => {
+          .then(lines => lines.json())
+          .then((linesJSON) => {
+            this.state.polylineList = []
+            linesJSON.forEach((line) => {
+              const lineObj = { coordinates: [], color: '#000' }
+              line.coordinates.forEach((point) => {
+                const LatLng = { longitude: point[0], latitude: point[1] }
+                lineObj.coordinates.push(LatLng)
+              })
+              if (line.restrs.length > 0) {
+                lineObj.color = this.constructColorFromLineRestrs(line.restrs)
+              }
+              this.state.polylineList.push(lineObj)
+            })
+          }).catch((e) => {
           console.log(e)
         })
       }
     }
+  }
+
+  constructColorFromLineRestrs = (lineRestrs) => {
+    let color = '#000'
+    lineRestrs.forEach((lineRestr) => {
+      switch (lineRestr[0]) {
+        case 'red':
+        case 'np':
+        case 'hyd':
+          color = '#f00'
+          break
+        case 'sweep':
+          color = '#c0c'
+          break
+        case 'ppd':
+          color = '#ccc'
+          break
+        case 'dis':
+          color = '#00f'
+          break
+        case 'yellow':
+          color = '#ff0'
+          break
+        case 'white':
+          color = '#fff'
+          break
+        default:
+          color = '#000'
+          break
+      }
+    })
+    return color
   }
 
   watchLocation = async () => {
@@ -140,7 +182,15 @@ class Map extends Component {
         onRegionChangeComplete={this.onRegionChangeComplete}
         loadingEnabled
         showsUserLocation
-      />
+      >
+        { this.state.polylineList.map(
+          polyline =>
+            (<MapView.Polyline
+              coordinates={polyline.coordinates}
+              strokeColor={polyline.color}
+            />),
+        )}
+      </MapView>
     )
   }
 }
