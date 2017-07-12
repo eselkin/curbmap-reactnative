@@ -1,9 +1,0 @@
-machine:
-  
-
-dependencies:
-  override:
-    -yarn
-test:
-  override:
-    -yarn

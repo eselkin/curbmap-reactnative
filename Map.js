@@ -48,7 +48,7 @@ class Map extends Component {
 
   componentWillUnmount() {
     if (this.watcher) {
-            // this.watcher()
+      // this.watcher()
     }
   }
 
@@ -64,13 +64,13 @@ class Map extends Component {
     this.setState({ region })
     if (this.props.session) {
       if (2 * LONGITUDE_DELTA < 0.4) {
-                // temporary fix for huge amounts of data, adding the user=... attribute
+        // temporary fix for huge amounts of data, adding the user=... attribute
         const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}&user=${4}`
         const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
-                (this.state.region.longitude - LONGITUDE_DELTA),
-                (this.state.region.latitude + LATITUDE_DELTA),
-                (this.state.region.longitude + LONGITUDE_DELTA),
-                this.props.username)
+          (this.state.region.longitude - LONGITUDE_DELTA),
+          (this.state.region.latitude + LATITUDE_DELTA),
+          (this.state.region.longitude + LONGITUDE_DELTA),
+          this.props.username)
         fetch(urlstringfixed, {
           method: 'get',
           mode: 'cors',
@@ -78,21 +78,21 @@ class Map extends Component {
             session: this.props.session,
           },
         })
-        .then(lines => lines.json())
-        .then((linesJSON) => {
-          this.state.polylineList = []
-          linesJSON.forEach((line) => {
-            const lineObj = { coordinates: [], color: '#000' }
-            line.coordinates.forEach((point) => {
-              const LatLng = { longitude: point[0], latitude: point[1] }
-              lineObj.coordinates.push(LatLng)
+          .then(lines => lines.json())
+          .then((linesJSON) => {
+            this.state.polylineList = []
+            linesJSON.forEach((line) => {
+              const lineObj = { coordinates: [], color: '#000' }
+              line.coordinates.forEach((point) => {
+                const LatLng = { longitude: point[0], latitude: point[1] }
+                lineObj.coordinates.push(LatLng)
+              })
+              if (line.restrs.length > 0) {
+                lineObj.color = this.constructColorFromLineRestrs(line.restrs)
+              }
+              this.state.polylineList.push(lineObj)
             })
-            if (line.restrs.length > 0) {
-              lineObj.color = this.constructColorFromLineRestrs(line.restrs)
-            }
-            this.state.polylineList.push(lineObj)
-          })
-        }).catch((e) => {
+          }).catch((e) => {
           console.log(e)
         })
       }
@@ -156,7 +156,7 @@ class Map extends Component {
           },
         })
       },
-        )
+    )
   }
 
 
@@ -164,10 +164,10 @@ class Map extends Component {
     const { locationServicesEnabled } = await Location.getProviderStatusAsync()
 
     if (!locationServicesEnabled) {
-            // Open location settings
+      // Open location settings
       IntentLauncherAndroid.startActivityAsync(
-                IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS,
-            )
+        IntentLauncherAndroid.ACTION_LOCATION_SOURCE_SETTINGS,
+      )
     }
 
     return locationServicesEnabled
@@ -184,9 +184,12 @@ class Map extends Component {
         showsUserLocation
       >
         { this.state.polylineList.map(
-                polyline =>
-                  <MapView.Polyline coordinates={polyline.coordinates} strokeColor={polyline.color} />,
-            )}
+          polyline =>
+            (<MapView.Polyline
+              coordinates={polyline.coordinates}
+              strokeColor={polyline.color}
+            />),
+        )}
       </MapView>
     )
   }
