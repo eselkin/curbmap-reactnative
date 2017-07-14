@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import MapView from 'react-native-maps'
-import { StyleSheet } from 'react-native'
+import { StyleSheet, AsyncStorage } from 'react-native'
 import { Permissions, IntentLauncherAndroid, Location } from 'expo'
 import PropTypes from 'prop-types'
+import { isSignedIn } from './auth'
 
 const styles = StyleSheet.create({
   map: {
@@ -38,12 +39,21 @@ class Map extends Component {
       longitudeDelta: LONGITUDE_DELTA,
     },
     polylineList: [],
+    username: 'curbmaptest',
+    session: ''
   }
 
   componentWillMount() {
     if (this.canGetLocation()) {
       this.watchLocation()
     }
+    if (this.props.session !== undefined) {
+      this.setState({
+        username: this.props.username,
+        session: this.props.session,
+      })
+    }
+
   }
 
   componentWillUnmount() {
@@ -61,41 +71,78 @@ class Map extends Component {
       LATITUDE_DELTA = region.latitudeDelta
       LONGITUDE_DELTA = region.longitudeDelta  // from the zoom level at resting
     }
-    this.setState({ region })
-    if (this.props.session) {
-      if (2 * LONGITUDE_DELTA < 0.4) {
-        // temporary fix for huge amounts of data, adding the user=... attribute
-        const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}&user=${4}`
-        const urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
-          (this.state.region.longitude - LONGITUDE_DELTA),
-          (this.state.region.latitude + LATITUDE_DELTA),
-          (this.state.region.longitude + LONGITUDE_DELTA),
-          this.props.username)
-        fetch(urlstringfixed, {
-          method: 'get',
-          mode: 'cors',
-          headers: {
-            session: this.props.session,
-          },
-        })
-          .then(lines => lines.json())
-          .then((linesJSON) => {
-            this.state.polylineList = []
-            linesJSON.forEach((line) => {
-              const lineObj = { coordinates: [], color: '#000' }
-              line.coordinates.forEach((point) => {
-                const LatLng = { longitude: point[0], latitude: point[1] }
-                lineObj.coordinates.push(LatLng)
-              })
-              if (line.restrs.length > 0) {
-                lineObj.color = this.constructColorFromLineRestrs(line.restrs)
+    isSignedIn().then((result) => {
+      if (result) {
+        AsyncStorage.multiGet(['USERNAME', 'SESSION'])
+          .then((stores) => {
+            stores.map((result, i, store) => {
+              switch (store[i][0]) {
+                case 'USERNAME':
+                  this.setState({username: store[i][1]})
+                  break
+                case 'SESSION':
+                  this.setState({session: store[i][1]})
+                  break
               }
-              this.state.polylineList.push(lineObj)
             })
-          }).catch((e) => {
-          console.log(e)
+          })
+          .catch((err) => {
+            console.log(`ERROR:${err}`)
+          })
+      } else {
+        // on signout and redirect here, the user should become curbmap
+        this.setState({
+          username: 'curbmaptest',
+          session: 'x',
         })
       }
+    })
+    this.setState({region})
+    if (this.state.session) {
+      // temporary fix for huge amounts of data, adding the user=... attribute
+      const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}`
+      let urlstringfixed;
+      if (LONGITUDE_DELTA < 0.012) {
+        urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
+          (this.state.region.longitude - LONGITUDE_DELTA),
+          (this.state.region.latitude + LATITUDE_DELTA),
+          (this.state.region.longitude + LONGITUDE_DELTA))
+      } else {
+        urlstringfixed = urlstring((this.state.region.latitude - 0.012),
+          (this.state.region.longitude - 0.012),
+          (this.state.region.latitude + 0.012),
+          (this.state.region.longitude + 0.012))
+      }
+      console.log('fetching with u: ' + this.state.username + ' session: ' + this.state.session)
+      fetch(urlstringfixed, {
+        method: 'get',
+        mode: 'cors',
+        headers: {
+          session: this.state.session,
+          username: this.state.username,
+        },
+      })
+        .then(lines => lines.json())
+        .then((linesJSON) => {
+          const start = new Date().getTime()
+          console.log("Got json lines:"+ linesJSON.length)
+          this.state.polylineList = []
+          linesJSON.forEach((line) => {
+            const lineObj = {coordinates: [], color: '#000'}
+            line.coordinates.forEach((point) => {
+              const LatLng = {longitude: point[0], latitude: point[1]}
+              lineObj.coordinates.push(LatLng)
+            })
+            if (line.restrs.length > 0) {
+              lineObj.color = this.constructColorFromLineRestrs(line.restrs)
+            }
+            this.state.polylineList.push(lineObj)
+          })
+          this.setState({})
+          console.log(new Date().getTime() - start)
+        }).catch((e) => {
+        console.log("ERROR:   "+e)
+      })
     }
   }
 

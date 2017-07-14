@@ -17,3 +17,22 @@ export const onSignOut = () => {
   AsyncStorage.removeItem('USERNAME')
   return AsyncStorage.removeItem('PASSWORD')
 }
+
+export const fetchLogin = (username, password) => {
+  fetch('https://curbmap.com/login', {
+    method: 'post',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: `username=${this.state.user}&password=${this.state.pass}`,
+  })
+    .then(responseUser => responseUser.json())
+    .then((responseJSON) => {
+      responseJSON['success'] = true
+      return responseJSON
+    })
+    .catch(() => {
+      return {success: false}
+    })
+}

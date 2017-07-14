@@ -2,16 +2,18 @@ version: 2
 jobs:
   build:
     docker:
-      - image: curbmap/fedora-node:v0.0.2
+      - image: circleci/node:latest
     working_directory: ~/curbmap-reactnative
     branches:
       only:
-        - master
+        - development
     steps:
       - checkout
       - run: yarn install --force
       - deploy:
           name: Exposing
           command:  |
+            if [ "${CIRCLE_BRANCH}" == "development" ]; then
               exp login -u "${EXPOUSER}" -p "${EXPOPASS}" --non-interactive
               exp publish -s "curbmap@gmail.com"
+            fi

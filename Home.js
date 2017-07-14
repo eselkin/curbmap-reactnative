@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { StyleSheet, View, Image } from 'react-native'
 import MenuIcon from './MenuIcon'
 import Map from './Map'
+import { isSignedIn } from './auth'
 
 const styles = StyleSheet.create({
   full: {
@@ -19,17 +20,14 @@ class Home extends Component {
     drawerIcon: ({ tintColor }) => <Image style={[styles.icon, { tintColor }]} />,
   }
 
-  state = {
-    username: '',
-    password: '',
-    authtoken: '',
-    expiresAt: '',
-  }
-
   render() {
     let map
     if (this.props.navigation.state.params === undefined) {
-      map = <Map />
+      map = <Map
+        username='curbmaptest'
+        password='TestCurbm@p1'
+        session='x'
+      />
     } else {
       map = (
         <Map

@@ -65,6 +65,11 @@ export const createRootNavigator = (signedIn = false) => StackNavigator(
       navigationOptions: {
         gesturesEnabled: false,
       },
+      params: {
+        username: undefined,
+        password: undefined,
+        session: undefined
+      }
     },
   },
   {
