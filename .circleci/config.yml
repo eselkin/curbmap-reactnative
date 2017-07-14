@@ -9,6 +9,7 @@ jobs:
         - development
     steps:
       - checkout
+      - run: yarn global add exp
       - run: yarn install --force
       - deploy:
           name: Exposing
