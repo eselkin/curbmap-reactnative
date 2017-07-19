@@ -1,12 +1,20 @@
+
 import React, { Component } from 'react'
 import MapView from 'react-native-maps'
-import { StyleSheet, AsyncStorage } from 'react-native'
+import { StyleSheet, AsyncStorage, View } from 'react-native'
 import { Permissions, IntentLauncherAndroid, Location } from 'expo'
 import PropTypes from 'prop-types'
 import { isSignedIn } from './auth'
 
 const styles = StyleSheet.create({
   map: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  viewwindow: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -27,8 +35,9 @@ function template(strings, ...keys) {
   })
 }
 
-let LATITUDE_DELTA = 0.1922
-let LONGITUDE_DELTA = 0.121
+
+let LATITUDE_DELTA = 0.02
+let LONGITUDE_DELTA = 0.02
 
 class Map extends Component {
   state = {
@@ -40,20 +49,55 @@ class Map extends Component {
     },
     polylineList: [],
     username: 'curbmaptest',
-    session: ''
-  }
+    session: '',
+    checkedSignIn: false,
+  };
 
   componentWillMount() {
     if (this.canGetLocation()) {
-      this.watchLocation()
+      //this.watchLocation()
     }
-    if (this.props.session !== undefined) {
+    if (this.props.session) {
       this.setState({
         username: this.props.username,
         session: this.props.session,
       })
+    } else if (!this.state.checkedSignIn) {
+      isSignedIn().then((resultTest) => {
+        this.setState((prevState, props) => {
+          const newState = prevState
+          newState.checkedSignIn = true
+          return newState
+        })
+        if (resultTest) {
+          AsyncStorage.multiGet(['USERNAME', 'SESSION'])
+            .then((stores) => {
+              stores.map((result, i, store) => {
+                switch (store[i][0]) {
+                  case 'USERNAME':
+                    this.setState({ username: store[i][1] })
+                    break
+                  case 'SESSION':
+                    this.setState({ session: store[i][1] })
+                    break
+                  default:
+                    break
+                }
+                return null
+              })
+            })
+            .catch((err) => {
+              console.log(`ERROR:${err}`)
+            })
+        } else {
+          // on signout and redirect here, the user should become curbmap
+          this.setState({
+            username: 'curbmaptest',
+            session: 'x',
+          })
+        }
+      })
     }
-
   }
 
   componentWillUnmount() {
@@ -64,44 +108,21 @@ class Map extends Component {
 
   onRegionChange = (region) => {
     this.setState({ region })
-  }
+  };
 
   onRegionChangeComplete = (region) => {
+    this.setState({ moved: true })
+    setTimeout(() => { this.setState({moved: false})}, 1000)
     if (region.latitudeDelta < 10) {
       LATITUDE_DELTA = region.latitudeDelta
       LONGITUDE_DELTA = region.longitudeDelta  // from the zoom level at resting
     }
-    isSignedIn().then((result) => {
-      if (result) {
-        AsyncStorage.multiGet(['USERNAME', 'SESSION'])
-          .then((stores) => {
-            stores.map((result, i, store) => {
-              switch (store[i][0]) {
-                case 'USERNAME':
-                  this.setState({username: store[i][1]})
-                  break
-                case 'SESSION':
-                  this.setState({session: store[i][1]})
-                  break
-              }
-            })
-          })
-          .catch((err) => {
-            console.log(`ERROR:${err}`)
-          })
-      } else {
-        // on signout and redirect here, the user should become curbmap
-        this.setState({
-          username: 'curbmaptest',
-          session: 'x',
-        })
-      }
-    })
-    this.setState({region})
+
+    this.setState({ region })
     if (this.state.session) {
       // temporary fix for huge amounts of data, adding the user=... attribute
       const urlstring = template`https://curbmap.com:50003/areaPolygon?lat1=${0}&lng1=${1}&lat2=${2}&lng2=${3}`
-      let urlstringfixed;
+      let urlstringfixed
       if (LONGITUDE_DELTA < 0.012) {
         urlstringfixed = urlstring((this.state.region.latitude - LATITUDE_DELTA),
           (this.state.region.longitude - LONGITUDE_DELTA),
@@ -113,7 +134,8 @@ class Map extends Component {
           (this.state.region.latitude + 0.012),
           (this.state.region.longitude + 0.012))
       }
-      console.log('fetching with u: ' + this.state.username + ' session: ' + this.state.session)
+      console.log(`fetching with u: ${this.state.username} session: ${this.state.session}`)
+      this.state.time_start = new Date().getTime()
       fetch(urlstringfixed, {
         method: 'get',
         mode: 'cors',
@@ -123,35 +145,50 @@ class Map extends Component {
         },
       })
         .then(lines => lines.json())
-        .then((linesJSON) => {
-          const start = new Date().getTime()
-          console.log("Got json lines:"+ linesJSON.length)
-          this.state.polylineList = []
-          linesJSON.forEach((line) => {
-            const lineObj = {coordinates: [], color: '#000'}
-            line.coordinates.forEach((point) => {
-              const LatLng = {longitude: point[0], latitude: point[1]}
-              lineObj.coordinates.push(LatLng)
-            })
-            if (line.restrs.length > 0) {
-              lineObj.color = this.constructColorFromLineRestrs(line.restrs)
-            }
-            this.state.polylineList.push(lineObj)
-          })
-          this.setState({})
-          console.log(new Date().getTime() - start)
-        }).catch((e) => {
-        console.log("ERROR:   "+e)
-      })
+        .then(this.processLines)
+        .catch((e) => {
+          console.log(`Line 153 ERROR:   ${e}`)
+        })
     }
-  }
+  };
+
+  processLines = async (linesJSON) => {
+    const start = new Date().getTime()
+    console.log(`Time received fetch: ${start - this.state.time_start}`)
+    console.log(`Got json lines:${linesJSON.length}`)
+    console.log(linesJSON[0])
+    this.state.polylineList = []
+    this.setState({})
+    linesJSON.forEach((line) => {
+      if (this.state.moved) {
+        return
+      }
+      const lineObj = { coordinates: [], color: '#000', id: line.key }
+      line.coordinates.forEach((point) => {
+        const LatLng = { longitude: point[0], latitude: point[1] }
+        lineObj.coordinates.push(LatLng)
+      })
+      if (line.restrs.length > 0) {
+        lineObj.color = this.constructColorFromLineRestrs(line.restrs)
+      }
+      this.state.polylineList.push(lineObj)
+    })
+
+    this.setState({})
+      // CONSOLE OUTPUT:
+    console.log(`time taken: ${new Date().getTime() - start}`)
+  };
 
   constructColorFromLineRestrs = (lineRestrs) => {
-    let color = '#000'
+    let color = ''
     lineRestrs.forEach((lineRestr) => {
       switch (lineRestr[0]) {
         case 'red':
+          color = '#f00'
+          break
         case 'np':
+          color = '#f00'
+          break
         case 'hyd':
           color = '#f00'
           break
@@ -159,7 +196,7 @@ class Map extends Component {
           color = '#c0c'
           break
         case 'ppd':
-          color = '#ccc'
+          color = '#00adcc'
           break
         case 'dis':
           color = '#00f'
@@ -176,7 +213,7 @@ class Map extends Component {
       }
     })
     return color
-  }
+  };
 
   watchLocation = async () => {
     const { status } = await Permissions.askAsync(Permissions.LOCATION)
@@ -204,6 +241,10 @@ class Map extends Component {
         })
       },
     )
+  };
+
+  linePressed = (lineid) => {
+    console.log(`Line Pressed:${lineid}`)
   }
 
 
@@ -218,26 +259,33 @@ class Map extends Component {
     }
 
     return locationServicesEnabled
-  }
+  };
 
   render() {
     return (
-      <MapView
-        style={styles.map}
-        region={this.state.region}
-        onRegionChange={this.onRegionChange}
-        onRegionChangeComplete={this.onRegionChangeComplete}
-        loadingEnabled
-        showsUserLocation
-      >
-        { this.state.polylineList.map(
-          polyline =>
-            (<MapView.Polyline
-              coordinates={polyline.coordinates}
-              strokeColor={polyline.color}
-            />),
-        )}
-      </MapView>
+      <View style={styles.viewwindow}>
+
+        <MapView
+          style={styles.map}
+          region={this.state.region}
+          onRegionChange={this.onRegionChange}
+          onRegionChangeComplete={this.onRegionChangeComplete}
+          loadingEnabled
+          showsUserLocation
+        >
+          { this.state.polylineList.map(
+            polyline =>
+              (<MapView.Polyline
+                key={polyline.id}
+                coordinates={polyline.coordinates}
+                strokeColor={polyline.color}
+                strokeWidth={2}
+                onPress={() => this.linePressed(polyline.id)}
+
+              />),
+          )}
+        </MapView>
+      </View>
     )
   }
 }
